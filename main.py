@@ -36,7 +36,7 @@ if __name__ == "__main__":
     for i in range(len(new)):
         new[i] = new[i][0][14:-1]
 
-    filepath = '/Users/andrewswanback/Downloads/dummy'
+    filepath = '/Users/calebstevens/Downloads/dummy'
     filename = []
     num_written = 0
     #print(len(new))
