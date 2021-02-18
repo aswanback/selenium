@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Feb 18 11:11:58 2021
-
-@author: calebstevens
-"""
 from selenium.webdriver.common.keys import Keys
 import time
 import re
@@ -23,11 +16,14 @@ from selenium.webdriver.support import expected_conditions as EC
 import random as r
 import os
 
+#COMMMENT ONOUFNREUERLIUBEWLWFBE
+
+
 if __name__ == "__main__":
     chrome_options = webdriver.ChromeOptions()
-    prefs = {'download.default_directory': '/Users/calebstevens/Downloads/Videos'}
+    prefs = {'download.default_directory': '/Users/andrewswanback/Downloads/videos'}
     chrome_options.add_experimental_option('prefs', prefs)
-    web = webdriver.Chrome(chrome_options=chrome_options, executable_path='chrome/chromedriver')
+    web = webdriver.Chrome(options=chrome_options, executable_path='chrome/chromedriver')
 
     web.get('https://www.youtube.com')
 
