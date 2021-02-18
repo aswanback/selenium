@@ -9,9 +9,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-
-caleb_dir_1 = ''
-andrew_filepath_1 = '/Users/andrewswanback/Downloads/dummy'
+path = {
+    'andrew': '/Users/andrewswanback/Downloads/dummy',
+    'caleb': '/Users/calebstevens/Downloads/dummy'
+}
 
 def download_img_by_link(image_url, filepath, filename):
     r = requests.get(image_url, stream=True) # Open the url image, set stream to True, this will return the stream content.
@@ -40,7 +41,7 @@ if __name__ == "__main__":
     for i in range(len(new)):
         new[i] = new[i][0][14:-1]
 
-    filepath = andrew_filepath_1 #'/Users/andrewswanback/Downloads/dummy'
+    filepath = path['andrew'] #TODO: switch name here
     filename = []
     num_written = 0
     #print(len(new))
