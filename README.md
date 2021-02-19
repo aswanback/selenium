@@ -13,11 +13,11 @@
 ###editing.py
     concat()
     trim()
-    photo_audio_to_video()
-    video_audio_to_video()
+    dub_photo()
+    dub_video()
 
 ###misc
-    def download_img_by_link(image_url, filepath, filename)
+    download_img_by_link(image_url, filepath, filename)
     pause()
 
 ###Kinds of Videos
