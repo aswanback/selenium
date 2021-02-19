@@ -16,8 +16,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import random as r
 import os
 
-#COMMMENT ONOUFNREUERLIUBEWLWFBE
-
+def get_yt_videos(query, num_videos, duration):
+    return 0
 
 if __name__ == "__main__":
     chrome_options = webdriver.ChromeOptions()
