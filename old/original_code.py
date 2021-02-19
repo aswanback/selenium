@@ -61,5 +61,3 @@ if __name__ == "__main__":
     # time.sleep(10)
     web.quit()
 '''
-
-#FROM Video_acquisition.py

@@ -16,14 +16,11 @@ from selenium.webdriver.support import expected_conditions as EC
 import random as r
 import os
 
-def get_yt_videos(query, num_videos, duration):
-    return 0
-
 if __name__ == "__main__":
     chrome_options = webdriver.ChromeOptions()
     prefs = {'download.default_directory': '/Users/andrewswanback/Downloads/videos'}
     chrome_options.add_experimental_option('prefs', prefs)
-    web = webdriver.Chrome(options=chrome_options, executable_path='chrome/chromedriver')
+    web = webdriver.Chrome(options=chrome_options, executable_path='../chrome/chromedriver')
 
     web.get('https://www.youtube.com')
 
@@ -54,6 +51,4 @@ if __name__ == "__main__":
 
     dwnld_button = web.find_element_by_link_text('Download')
     dwnld_button.click()
-
-
 
