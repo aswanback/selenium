@@ -37,25 +37,15 @@ def dub_photo(img,audio,video): #no overwriting files with same name, will crash
 
 
 def dub_video(video,audio,output,video_is_longer=True):
-    if video_is_longer:
+    len_video = get_length(video)
+    len_audio = get_length(audio)
+    if len_video >= len_audio:
         os.system('ffmpeg -i {} -i {} -c:v copy -map 0:v:0 -map 1:a:0 {}'.format(video,audio,output))
     else:
         os.system('ffmpeg -i {} -i {} -c:v copy -map 0:v:0 -map 1:a:0 -shortest {}'.format(video, audio, output))
     return
 
 
-def get_video_length(filename):
-    result = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
-                             "format=duration", "-of",
-                             "default=noprint_wrappers=1:nokey=1", filename],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT)
-    return float(result.stdout)
-
-
-#TODO: Make this work
-def get_length_audio(filename):
-    result = subprocess.run(['ffprobe', '-i',filename, '-show_entries' ,'format=duration', '-v', 'quiet', '-of', 'csv="p=0"'],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT)
+def get_length(filename):
+    result = subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1',filename], stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
     return float(result.stdout)

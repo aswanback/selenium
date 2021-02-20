@@ -32,7 +32,6 @@ def set_dir(name,filename=''):
     return full_path
 
 
-
 if __name__ == "__main__":
     #dir_1 = set_dir('photos')
     #get_pexel_photos('wave',dir_1)
@@ -47,10 +46,13 @@ if __name__ == "__main__":
     #dir_4 = set_dir('untrimmed','video3.mp4')
     #dir_5 = set_dir('trimmed')
     #trim(dir_4,dir_5+'/new.mp4','00:00:02',end='00:00:18')
-    img = set_dir('new_photos_1','pexel_photo_wave_0.jpeg')
-    audio = set_dir('audio','123.mp3')
-    video = set_dir('video_out','out.mp4')
-    video1 = set_dir('untrimmed','10mins.mp4')
+
+    #img = set_dir('new_photos_1','pexel_photo_wave_0.jpeg')
+    #audio = set_dir('audio','123.mp3')
+    #video = set_dir('video_out','out.mp4')
+    #video1 = set_dir('untrimmed','10mins.mp4')
     #dub_video(video1,audio,video,video_is_longer=True)
-    print(get_video_length(video1))
+    #print(get_length(video1))
     #dub_photo(img,audio,video)
+    filepath = set_dir('calebtest')
+    get_yt_videos('cats', filepath, number=4)
