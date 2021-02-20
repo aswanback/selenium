@@ -15,7 +15,7 @@ name = 'andrew'
 
 path_dict = {
     'andrew': '/Users/andrewswanback/Documents/selenium_data',
-    'caleb': '/Users/calebstevens/Downloads'
+    'caleb': '/Users/calebstevens/Documents/selenium_data'
 }
 path = path_dict[name]  #anytime you need to use your full filepath, use 'path'
 
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     #audio = set_dir('audio','123.mp3')
     #video = set_dir('video_out','out.mp4')
     #video1 = set_dir('untrimmed','10mins.mp4')
-    #dub_video(video1,audio,video,video_is_longer=True)
+    #dub_video(video1,audio,video)
     #print(get_length(video1))
     #dub_photo(img,audio,video)
     filepath = set_dir('calebtest')

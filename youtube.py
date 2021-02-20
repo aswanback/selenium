@@ -79,7 +79,7 @@ def get_yt_videos(query,filepath,number=0,duration=0):
         time.sleep(2)
 
 
-    #if not duration == 0:   #do by duration
+    #if not duration == 0:   #do by duration #TODO
     #    dur = 0
 
         #dur += get_length(...)
@@ -91,7 +91,7 @@ def get_yt_videos(query,filepath,number=0,duration=0):
     return
 
 #get youtube free audio
-def get_yt_audios(filepath):
+def get_yt_audios(filepath):    #TODO: Add filters
     chrome_options = webdriver.ChromeOptions()
     prefs = {'download.default_directory': '{}'.format(filepath)}
     chrome_options.add_experimental_option('prefs', prefs)

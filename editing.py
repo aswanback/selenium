@@ -15,6 +15,8 @@ from misc import *
 from youtube import *
 from pexels import *
 
+#TODO
+
 def concat(listfile,outname):
     os.system('ffmpeg -f concat -safe 0 -i {} -c copy {}'.format(listfile,outname))
     #os.system("ffmpeg -safe 0 -f concat -segment_time_metadata 1 -i {} -vf select=concatdec_select -af aselect=concatdec_select, aresample=async=1 {}".format(listfile,outname))
@@ -36,7 +38,7 @@ def dub_photo(img,audio,video): #no overwriting files with same name, will crash
     return
 
 
-def dub_video(video,audio,output,video_is_longer=True):
+def dub_video(video,audio,output):
     len_video = get_length(video)
     len_audio = get_length(audio)
     if len_video >= len_audio:
