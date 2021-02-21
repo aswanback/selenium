@@ -9,13 +9,13 @@ import os
 import subprocess
 
 ##################
-name = 'andrew'
-#name = 'caleb'
+#name = 'andrew'
+name = 'caleb'
 ##################
 
 path_dict = {
     'andrew': '/Users/andrewswanback/Documents/selenium_data',
-    'caleb': '/Users/calebstevens/Downloads'
+    'caleb': '/Users/calebstevens/Documents/Selenium_data'
 }
 path = path_dict[name]  #anytime you need to use your full filepath, use 'path'
 
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     #dir_3 = set_dir('audio')
     #get_yt_audios(dir_3)
 
-    #concat('/Users/andrewswanback/Desktop/list.txt','/Users/andrewswanback/Desktop/out.mp4')
+
     #dir_4 = set_dir('untrimmed','video3.mp4')
     #dir_5 = set_dir('trimmed')
     #trim(dir_4,dir_5+'/new.mp4','00:00:02',end='00:00:18')
@@ -54,5 +54,5 @@ if __name__ == "__main__":
     #dub_video(video1,audio,video,video_is_longer=True)
     #print(get_length(video1))
     #dub_photo(img,audio,video)
-    filepath = set_dir('calebtest')
-    get_yt_videos('cats', filepath, number=4)
+    #filepath = set_dir('calebtest')
+    get_yt_videos("that quiet kid in class", "/users/calebstevens/downloads/Videos", 9)
