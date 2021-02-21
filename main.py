@@ -7,6 +7,7 @@ from youtube import *
 from pexels import *
 import os
 import subprocess
+from make_videos import *
 
 ##################
 name = 'andrew'
@@ -39,7 +40,7 @@ if __name__ == "__main__":
     #dir_2 = set_dir('videos')
     #get_pexel_videos('wave',dir_2)
 
-    #dir_3 = set_dir('audio')
+    #dir_3 = set_dir('audiotest')
     #get_yt_audios(dir_3)
 
     #concat('/Users/andrewswanback/Desktop/list.txt','/Users/andrewswanback/Desktop/out.mp4')
@@ -54,5 +55,9 @@ if __name__ == "__main__":
     #dub_video(video1,audio,video)
     #print(get_length(video1))
     #dub_photo(img,audio,video)
-    filepath = set_dir('calebtest')
-    get_yt_videos('cats', filepath, number=4)
+    #filepath = set_dir('calebtest')
+    #get_yt_videos('cats', filepath, duration=1000)
+    folder = set_dir('memetest')
+    name = set_dir('memetest','memecomp.mp4')
+    #meme('that quiet Kid in class',folder,name,duration=100)
+    concat(folder+'/listfile.txt',name)
