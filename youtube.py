@@ -71,10 +71,13 @@ def get_yt_videos(query,filepath,number=0,duration=0):
 
         #web.find_element_by_tag_name('body').send_keys(Keys.COMMAND + 'w')
         web.get(current_url)
-        ActionChains(web) \
-            .key_down(Keys.SHIFT) \
-            .key_down("n") \
-            .perform()
+        time.sleep(2)
+
+        nextvid = web.find_element_by_class_name('ytp-next-button')
+        nextvid.click()
+
+
+
         print('new video')
         time.sleep(2)
 
@@ -114,7 +117,7 @@ def get_yt_audios(filepath):
         i.click()
         time.sleep(4) #TODO: fix
     print('downloaded {} audio files to {}'.format(len(download_buttons),filepath))
-    web.quit()
+    #web.quit()
     return
 
 #start an upload but let user finish it
