@@ -1,6 +1,7 @@
 import urllib.request
 from main import *
 from pexels import *
+import os
 
 def download_video_by_link(url,filepath,filename):
     urllib.request.urlretrieve(url, '{}/{}.mp4'.format(filepath,filename))
@@ -29,3 +30,9 @@ def wait_download_complete(filepath):
             fileends = "crdownload"
         else:
             fileends = "none"
+
+def notify(title, subtitle, message):
+    t = '-title {!r}'.format(title)
+    s = '-subtitle {!r}'.format(subtitle)
+    m = '-message {!r}'.format(message)
+    os.system('terminal-notifier {}'.format(' '.join([m, t, s])))

@@ -2,7 +2,7 @@ import time
 import re
 from selenium import webdriver
 from editing import *
-from misc import *
+import misc
 from youtube import *
 from pexels import *
 import os
@@ -57,7 +57,15 @@ if __name__ == "__main__":
     #dub_photo(img,audio,video)
     #filepath = set_dir('calebtest')
     #get_yt_videos('cats', filepath, duration=1000)
-    folder = set_dir('memetest')
-    name = set_dir('memetest','memecomp.mp4')
-    #meme('that quiet Kid in class',folder,name,duration=100)
-    concat(folder+'/listfile.txt',name)
+    #folder = set_dir('inaugural_video')
+    #name = set_dir('inaugural_video','why_are_you_gay?.mp4')
+    #meme('the quiet Kid in class',folder,name,duration=2*60)
+    #concat(folder+'/listfile.txt',name)
+    #dir_8 = set_dir('massage')#
+    #yt_repost_downloader('massage music',dir_8,number=20)
+    #listfile = set_dir('memetest','listfile.txt')
+    #batch_trim(listfile,'timestamp')
+
+    #string = 'thisisa6filename 9 81'
+    #print(re.findall(r'(?<=\s)(?:\d+)',string))
+    misc.notify(title='Selenium', subtitle='Meme video update', message='process finished')
