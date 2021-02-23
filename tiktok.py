@@ -116,6 +116,7 @@ for num in range (3):
 
     next_tok = web.find_element_by_class_name("arrow-right")
     for i in range(num):
+        time.sleep(1)
         next_tok.click()
 
 

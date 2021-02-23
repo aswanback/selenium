@@ -55,4 +55,4 @@ if __name__ == "__main__":
     #print(get_length(video1))
     #dub_photo(img,audio,video)
     #filepath = set_dir('calebtest')
-    get_yt_videos("that quiet kid in class", "/users/calebstevens/downloads/Videos", 9)
+    get_yt_videos("it do go down", "/users/calebstevens/downloads/Videos", 9)
