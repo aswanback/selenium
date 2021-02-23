@@ -35,7 +35,7 @@ def get_yt_videos(query, folder, number=0, duration=0):
     chrome_options = webdriver.ChromeOptions()
     prefs = {'download.default_directory': folder}
     chrome_options.add_experimental_option('prefs', prefs)
-    chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--headless")
     web = webdriver.Chrome(options=chrome_options, executable_path='chrome/chromedriver')
     web.get("https://www.youtube.com/results?search_query=" + str(query))
     starting_url = web.current_url
@@ -51,20 +51,22 @@ def get_yt_videos(query, folder, number=0, duration=0):
         web.get('https://yt1s.com/youtube-to-mp4?q={}'.format(current_url))
 
         ##DOWNLOAD##
-        WebDriverWait(web, 15).until(EC.presence_of_element_located((By.LINK_TEXT, 'Download')))
+        WebDriverWait(web, 120).until(EC.presence_of_element_located((By.LINK_TEXT, 'Download')))
         dwnld_button = web.find_element_by_link_text('Download')
         dwnld_button.click()
 
+
         ##CHECK DOWNLOAD COMPLETE##
+        print('Downloading video {}'.format(num_vids+1))
         misc.wait_download_complete(folder)
 
         ##LENGTH OF NEWEST FILE##
         file = max([os.path.join(folder, f) for f in os.listdir(folder)], key=os.path.getctime)
         newfile = file.replace(' ', '-')
-        newfile = newfile.replace('(','-')
-        newfile = newfile.replace(')','-')
-        newfile = newfile.replace('[','')
-        newfile = newfile.replace(']','')
+        #newfile = newfile.replace('(','-')
+        #newfile = newfile.replace(')','-')
+        #newfile = newfile.replace('[','')
+        #newfile = newfile.replace(']','')
         os.rename(file, newfile)
         listfile.write('file ' + "'{}'\n".format(newfile))
         dur += editing.get_length(newfile)
@@ -81,8 +83,9 @@ def get_yt_videos(query, folder, number=0, duration=0):
             time.sleep(0.2)
             elapsed += 0.2
             if elapsed > 4:
-                print('Stalled for {}'.format(elapsed))
+                print('Stalled for {}'.format(int(elapsed)))
                 web.find_element_by_class_name('ytp-next-button').click()
+        print('Back on track')
 
         ##BREAK IF COMPLETE##
         if use_dur and dur >= duration:

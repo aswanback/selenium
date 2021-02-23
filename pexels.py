@@ -22,6 +22,7 @@ def get_pexel_photos(query, filepath):
 
 
 def get_pexel_videos(query,filepath):
+    listfile = open(filepath + '/listfile.txt', "w")
     web = webdriver.Chrome('chrome/chromedriver')
     web.get('http://www.pexels.com/search/videos/{}'.format(query))
     elements = web.find_elements_by_class_name('photo-item__video')
@@ -30,9 +31,11 @@ def get_pexel_videos(query,filepath):
         old_str = e.get_attribute('innerHTML')
         links.append(re.findall(r'(?:https://).+(?="\s)',old_str)[0])
     web.quit()
-    print('downloaded {} videos to {}'.format(len(links),filepath))
-    for i in range(len(links)):
-        filename = 'pexel_video_{}_{}.mp4'.format(query,i)
-        misc.download_video_by_link(links[i],filepath,filename)
 
+    for i in range(len(links)):
+        filename = 'pexel_video_{}_{}'.format(query,i)
+        listfile.write("file '{}/{}.mp4'\n".format(filepath,filename))
+        misc.download_video_by_link(links[i],filepath,filename)
+    print('downloaded {} videos to {}'.format(len(links), filepath))
+    listfile.close()
 

@@ -1,5 +1,11 @@
 ##Automating Digital Content Creation Workflows in Python with Selenium
 
+##Objectives
+    Figure out tags
+    Make tik tok work
+    intros + outros
+
+
 ###pexels.py
     get_pexel_photos(query, filepath)
     get_video_photos(query, filepath)
@@ -31,4 +37,6 @@
 
 ####Random
     clean folders for storage
+
+
 

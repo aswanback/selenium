@@ -68,4 +68,13 @@ if __name__ == "__main__":
 
     #string = 'thisisa6filename 9 81'
     #print(re.findall(r'(?<=\s)(?:\d+)',string))
-    misc.notify(title='Selenium', subtitle='Meme video update', message='process finished')
+    folder = set_dir('massage')
+
+    relax(folder,folder+'/photos','videos','waves')
+
+    #check_folder = subprocess.run(['[', '-d', '"/Users/andrewswanback/Documents/selenium_data/massage"', ']', '&&', 'echo', '"0"', '||', 'echo', '"1"'])
+
+   # print(check_folder)
+    #get_length()
+    #misc.notify(title='Selenium', subtitle='Meme video update', message='process finished')
+

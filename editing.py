@@ -20,7 +20,7 @@ def concat(listfile,outname):
 
     ##CONCATENATION
     print('Concatenating files...')
-    os.system('ffmpeg -y -hide_banner -loglevel error -stats -safe 0 -f concat -segment_time_metadata 1 -i {} -vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1 {}'.format(newlfilepath+'newlistfile.txt',outname))
+    os.system('ffmpeg -y -hide_banner -loglevel error -stats -safe 0 -f concat -segment_time_metadata 1 -i {} -c copy {}'.format(newlfilepath+'newlistfile.txt',outname)) #-vf select=concatdec_select -af aselect=concatdec_select,aresample=async=1
     print('Finished')
     return
 
