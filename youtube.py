@@ -7,6 +7,7 @@ import os
 import re
 from selenium.webdriver.support.wait import WebDriverWait
 import editing
+import main
 import misc
 from pexels import *
 from selenium.webdriver.common.keys import Keys
@@ -25,11 +26,12 @@ def get_yt_videos(query, folder, number=0, duration=0):
         use_num = True
 
     ##SETUP LISTFILE
-    #intro_path = '' #TODO: find
-    #os.system('cp {}/intro.mp4 {}'.format(intro_path, folder))
     listfile = open(folder + '/listfile.txt', "w")
+    outro_path = main.set_dir(''+'/outro.mp4')
+    #intro_path = main.set_dir(''+'/intro.mp4')
+    #os.system('cp {} {}'.format(intro_path, folder))
+    os.system('cp {} {}'.format(outro_path, folder))
     #listfile.write('file '+"'{}'".format(folder+'/intro.mp4'))
-
 
     ##SETUP CHROME##
     chrome_options = webdriver.ChromeOptions()
@@ -55,7 +57,6 @@ def get_yt_videos(query, folder, number=0, duration=0):
         dwnld_button = web.find_element_by_link_text('Download')
         dwnld_button.click()
 
-
         ##CHECK DOWNLOAD COMPLETE##
         print('Downloading video {}'.format(num_vids+1))
         misc.wait_download_complete(folder)
@@ -63,10 +64,10 @@ def get_yt_videos(query, folder, number=0, duration=0):
         ##LENGTH OF NEWEST FILE##
         file = max([os.path.join(folder, f) for f in os.listdir(folder)], key=os.path.getctime)
         newfile = file.replace(' ', '-')
-        #newfile = newfile.replace('(','-')
-        #newfile = newfile.replace(')','-')
-        #newfile = newfile.replace('[','')
-        #newfile = newfile.replace(']','')
+        newfile.replace("'",'')
+        newfile.replace('"','')
+        newfile.replace(']','')
+        newfile.replace('[','')
         os.rename(file, newfile)
         listfile.write('file ' + "'{}'\n".format(newfile))
         dur += editing.get_length(newfile)
@@ -85,15 +86,16 @@ def get_yt_videos(query, folder, number=0, duration=0):
             if elapsed > 4:
                 print('Stalled for {}'.format(int(elapsed)))
                 web.find_element_by_class_name('ytp-next-button').click()
-        print('Back on track')
 
         ##BREAK IF COMPLETE##
         if use_dur and dur >= duration:
+            listfile.write('file '+"'{}'".format(folder+'/outro.mp4'))
             listfile.close()
             web.close()
             return folder + '/listfile.txt'
         elif use_num and num_vids>=number:
             web.close()
+            listfile.write('file '+"'{}'".format(folder+'/outro.mp4'))
             listfile.close()
             return folder + '/listfile.txt'
 
@@ -232,7 +234,6 @@ def yt_repost_downloader(query, folder, number=0, view_cutoff=0):
             os.rename(file, newfile)
             listfile.write('file ' + "'{}'\n".format(newfile))
     web.close()
-
 
 #start an upload but let user finish it
 def start_yt_upload():

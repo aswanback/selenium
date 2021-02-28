@@ -13,7 +13,7 @@ def concat(listfile,outname):
     for i in range(len(filenames_unedited)):
         filename = re.findall(r'(?:/Users).+(?:\.mp4)',filenames_unedited[i])[0]
         newfilename = filename[0:-4]+'-edited.mp4'
-        os.system('ffmpeg -y -hide_banner -loglevel error -stats -i {} -vf "scale=w=1920:h=1080:force_original_aspect_ratio=1,pad=1920:1080:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 -c:v libx264 -c:a aac {}'.format(filename, newfilename))
+       # os.system('ffmpeg -y -hide_banner -loglevel error -stats -i {} -vf "scale=w=1920:h=1080:force_original_aspect_ratio=1,pad=1920:1080:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 -c:v libx264 -c:a aac {}'.format(filename, newfilename))
         newlfile.write("file '{}'\n".format(newfilename))
     lfile.close()
     newlfile.close()
@@ -24,8 +24,8 @@ def concat(listfile,outname):
     print('Finished')
     return
 
-
 def trim_file(_input, output=0, start=0, end=0, dur=0):
+    #print('Starting individual trim')
     if output == 0:
         output = _input
     temp = _input[0:-4]+'-temp.mp4'
@@ -35,9 +35,11 @@ def trim_file(_input, output=0, start=0, end=0, dur=0):
     elif end != 0:
         os.system('ffmpeg -y -hide_banner -loglevel error -stats -i {} -ss {} -to {} -async 1 {}'.format(_input,start,end,temp))
         os.system('mv {} {}'.format(temp, output))
+    #print('Individual trim complete')
     return
 
 def batch_trim(listfile,dur_or_timestamp):
+    print('Starting batch trim')
     lfile = open(listfile, 'r')  # open file with paths
     filenames_unedited = [line.strip("\n") for line in lfile if line != "\n"]  # get filenames in list
     filenames_edited = []
