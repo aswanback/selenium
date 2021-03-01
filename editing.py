@@ -1,62 +1,80 @@
 from misc import *
 from youtube import *
+import subprocess
+import os
 
-def concat(folder,outro_exists=1,intro_exists=0):
+def concat(folder):
     #SET UP INTRO/OUTRO
     intro_path = '' #main.set_dir('' + 'intro.mp4')
     outro_path = main.set_dir('' + 'outro.mp4')
-    #if 'intro.mp4' not in os.listdir(folder):
-        #os.system('cp {} {}'.format(intro_path, folder))
-    if 'outro.mp4' not in os.listdir(folder):
-        os.system('cp {} {}'.format(outro_path, folder))
 
     #MAKE LIST FILE
-    listfile = open(folder + '/listfile.txt', "w")
-    if intro_exists != 0:
-        listfile.write("file '{}'\n".format(folder + '/intro.mp4'))
+    if 'listfile.txt' in os.listdir(folder):
+        listfile = open(folder+'/listfile.txt','a')
+    else:
+        listfile = open(folder + '/listfile.txt', "w")
     files = [name for name in os.listdir(folder) if 'video' in name and '-e.mp4' not in name]
-    if outro_exists != 0:
-        os.rename(folder+'/outro.mp4',folder+'/video{}.mp4'.format(len(files)+1))
-        files.append('video{}.mp4'.format(len(files)+1))
+    files.sort()
 
     ##MAKE LISTFILE AND REENCODE VIDEOS
-    for i in range(len(files)):
-        filename_orig = folder + '/video{}.mp4'.format(i+1)
+    file_num = 1
+    for i in files:
+        filename_orig = folder+'/'+i
         filename_new = filename_orig[0:-4]+'-e.mp4'
-        print('converting video {}...'.format(i+1))
+        if (i[0:-4] + '-e.mp4') not in os.listdir(folder):
+            print(f'converting video {file_num}...')
+            #GET CODEC AND DIMENSION PROPERTIES
+            video_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))
+            audio_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'a:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))
+            wxh = str(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'stream=width,height', '-of', 'csv=p=0:s=x',filename_orig]))
+            #MODIFY RAW TERMINAL OUTPUT
+            video_codec = video_codec[2:-3]
+            audio_codec = audio_codec[2:-3]
+            [width,height] = re.split('x',wxh)
+            width = width[2:]
+            height = height[0:-5]
 
-        #GET CODEC AND DIMENSION PROPERTIES
-        video_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))
-        audio_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'a:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))
-        wxh = str(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'stream=width,height', '-of', 'csv=p=0:s=x',filename_orig]))
-        #MODIFY RAW TERMINAL OUTPUT
-        video_codec = video_codec[2:-3]
-        audio_codec = audio_codec[2:-3]
-        [width,height] = re.split('x',wxh)
-        width = width[2:]
-        height = height[0:-5]
+            #REENCODE, PAD IF NECESSARY
+            key = re.findall(r'(?:video\d+-e.mp4)',filename_new)
+            if key in os.listdir(folder):
+                continue
+            if audio_codec != 'aac' or video_codec != 'h264':
+                print('  encoding...')
+                os.system('ffmpeg -y -hide_banner -loglevel error -stats -i {} -vf "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 -c:v libx264 -c:a aac {}'.format(filename_orig, filename_new))
+            elif width != 1920 or height != 1080:
+                print('  padding...')
+                os.system('ffmpeg -y -hide_banner -loglevel error -stats -i {} -vf "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 {}'.format(filename_orig,filename_new))
+            else:
+                print('  no conversion needed')
+                os.rename(filename_orig,filename_new)
+            #full_list = listfile.readlines()
+            #if f"file '{filename_new}'" not in full_list:
 
-        #REENCODE, PAD IF NECESSARY
-        key = re.findall(r'(?:video\d+-e.mp4)',filename_new)
-        if key in os.listdir(folder):
-            continue
-        if audio_codec != 'aac' or video_codec != 'h264':
-            print('  encoding...')
-            os.system('ffmpeg -y -hide_banner -loglevel error -stats -i {} -vf "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 -c:v libx264 -c:a aac {}'.format(filename_orig, filename_new))
-        elif width != 1920 or height != 1080:
-            print('  padding...')
-            os.system('ffmpeg -y -hide_banner -loglevel error -stats -i {} -vf "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 {}'.format(filename_orig,filename_new))
         else:
-            print('  no conversion needed')
-            os.rename(filename_orig,filename_new)
+            print(f'{i} already converted')
         listfile.write("file '{}'\n".format(filename_new))
+        file_num += 1
 
     ##CONCATENATION
     listfile.close()
     comp_path = folder+'/comp.mp4'
     print('Concatenating videos...')
-    os.system('ffmpeg -y -hide_banner -loglevel error -stats -safe 0 -f concat -segment_time_metadata 1 -i {} -c copy {}'.format(folder+'/listfile.txt',comp_path))
+    os.system(f'ffmpeg -y -hide_banner -loglevel error -stats -safe 0 -f concat -segment_time_metadata 1 -i {folder+"/listfile.txt"} -c copy {comp_path}')
     print('Finished')
+
+    iolist = open(folder + '/iolist.txt', 'w')
+    if intro_path != '':
+        if 'intro.mp4' not in os.listdir(folder):
+            os.system('cp {} {}'.format(intro_path, folder))
+        iolist.write(f"file '{folder}/intro.mp4'\n")
+    iolist.write(f"file '{folder}/comp.mp4'\n")
+    if outro_path != '':
+        if 'outro.mp4' not in os.listdir(folder):
+            os.system('cp {} {}'.format(outro_path, folder))
+        iolist.write(f"file '{folder}/outro.mp4'\n")
+    iolist.close()
+    os.system(f'ffmpeg -y -hide_banner -loglevel error -stats -safe 0 -f concat -segment_time_metadata 1 -i {folder+"/iolist.txt"} -c copy {folder}/final.mp4')
+
     return
 
 def trim_file(_input, output=0, start=0, end=0, dur=0):

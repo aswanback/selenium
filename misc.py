@@ -1,29 +1,16 @@
 import urllib.request
-from main import *
 from pexels import *
 import os
-def set_dir(name,filename=''):
-    if name == '':
-        if filename != '':
-            return path+'/'+filename
-        else:
-            return path
-    if filename == '':
-        full_path = '{}/{}'.format(path, name)
-        if not os.path.exists(full_path):
-            os.mkdir(full_path)
-    else:
-        dir_path = '{}/{}'.format(path, name)
-        full_path = '{}/{}/{}'.format(path, name,filename)
-        if not os.path.exists(dir_path):
-            os.mkdir(dir_path)
-    return full_path
+from editing import get_length
 
 def clear(folder):
     os.system('rm {}/*'.format(folder))
 
-def clean(folder):
-    remove_list = [name for name in os.listdir(folder) if ('.txt' or '-e.mp4' or '.DS_Store' or 'comp.mp4')not in name]
+def clean(folder,hard=False):
+    if hard == True:
+        remove_list = [name for name in os.listdir(folder) if ('.txt' or '.DS_Store' or 'comp.mp4') not in name]
+    else:
+        remove_list = [name for name in os.listdir(folder) if ('.txt' or '-e.mp4' or '.DS_Store' or 'comp.mp4')not in name]
     for i in remove_list:
         os.system('rm {}'.format(folder+'/'+i))
 

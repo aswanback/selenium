@@ -17,16 +17,15 @@ from selenium.webdriver.common.by import By
 
 #######################################################################
 def get_yt_videos(query, folder, number=0, duration=0):
-    ##SETUP USE MODE##
+    ##SET UP USE MODE##
     use_dur = False
     use_num = False
     if duration > 0:
         use_dur = True
     if number > 0:
         use_num = True
-    archive = open(folder+'/archive.txt','w')
 
-    ##SETUP CHROME##
+    ##SET UP CHROME##
     chrome_options = webdriver.ChromeOptions()
     prefs = {'download.default_directory': folder}
     chrome_options.add_experimental_option('prefs', prefs)
@@ -46,7 +45,9 @@ def get_yt_videos(query, folder, number=0, duration=0):
         ##PUT RIGHT LINK INTO YT1S.COM##
         current_url = web.current_url
         if current_url not in url_list:
+            archive = open(folder + '/archive.txt', 'a')
             archive.write(current_url+'\n')
+            archive.close()
             url_list.append(current_url)
             web.get('https://yt1s.com/youtube-to-mp4?q={}'.format(current_url))
 
@@ -63,7 +64,6 @@ def get_yt_videos(query, folder, number=0, duration=0):
             ##LENGTH OF NEWEST FILE##
             file = max([os.path.join(folder, f) for f in os.listdir(folder)], key=os.path.getctime)
             newfile = folder+'/video{}.mp4'.format(num_vids)
-            #os.system('mv {} {}/video{}.mp4'.format(file,folder,num_vids))
             os.rename(file, newfile)
             time.sleep(0.1)
             dur += editing.get_length(newfile)
@@ -86,7 +86,6 @@ def get_yt_videos(query, folder, number=0, duration=0):
 
             ##BREAK IF COMPLETE##
             if (use_dur and dur >= duration) or (use_num and num_vids >=number):
-                archive.close()
                 web.close()
                 return
 
