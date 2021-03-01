@@ -1,7 +1,7 @@
 import urllib.request
 from pexels import *
 import os
-from editing import get_length
+import editing
 
 def clear(folder):
     os.system('rm {}/*'.format(folder))
@@ -17,7 +17,7 @@ def clean(folder,hard=False):
 def folder_duration(folder):
     total = 0
     for i in os.listdir(folder):
-        total += get_length(i)
+        total += editing.get_length(i)
     return total
 
 def download_video_by_link(url,filepath,filename):

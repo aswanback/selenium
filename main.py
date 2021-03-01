@@ -42,16 +42,16 @@ if __name__ == "__main__":
     #   4. Audit videos and trim as neccessary
     #   5. Comment out 'get_yt_videos()', uncomment 'concat()'
     #   6. Run again, finished
-    video_name = ''
+
     query = 'it do go down'
     duration = 60
 
-    folder = set_dir(video_name)
-    if video_name != '' and query != '' and duration != 0:
+    folder_name = query.replace(' ', '-')
+    folder = set_dir(folder_name)
+    if folder_name != '' and query != '' and duration != 0:
         #get_yt_videos(query, folder, duration=duration)
-        concat(folder)
+        #concat(folder)
         notify('Selenium','','Process finished')
-        pass
 
     #   Trimming -------------------------------------------------------------------------------------------------------
     #   Change video number to which one you want to trim
@@ -66,6 +66,6 @@ if __name__ == "__main__":
     # set 'hard' to 'True' to hard clean, removing everything except source links and final compilation
     folder_to_clean = ''
     if folder_to_clean != '':
-        m.clean(folder_to_clean,hard=False)
+        m.clean(folder+'/'+folder_to_clean,hard=False)
 
     # ------------------------------------------------------------------------------------------------------------------

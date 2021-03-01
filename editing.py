@@ -9,10 +9,7 @@ def concat(folder):
     outro_path = main.set_dir('' + 'outro.mp4')
 
     #MAKE LIST FILE
-    if 'listfile.txt' in os.listdir(folder):
-        listfile = open(folder+'/listfile.txt','a')
-    else:
-        listfile = open(folder + '/listfile.txt', "w")
+    listfile = open(folder + '/listfile.txt', "w")
     files = [name for name in os.listdir(folder) if 'video' in name and '-e.mp4' not in name]
     files.sort()
 
@@ -47,8 +44,6 @@ def concat(folder):
             else:
                 print('  no conversion needed')
                 os.rename(filename_orig,filename_new)
-            #full_list = listfile.readlines()
-            #if f"file '{filename_new}'" not in full_list:
 
         else:
             print(f'{i} already converted')
