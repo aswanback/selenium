@@ -5,8 +5,10 @@ import os
 
 def concat(folder):
     #SET UP INTRO/OUTRO
+    w = 1920    #intro/outro width
+    h = 1080    #intro/outro height
     intro_path = '' #main.set_dir('' + 'intro.mp4')
-    outro_path = main.set_dir('' + 'outro.mp4')
+    outro_path = main.set_dir('' + f'outro{h}.mp4')
 
     #MAKE LIST FILE
     listfile = open(folder + '/listfile.txt', "w")
@@ -19,7 +21,7 @@ def concat(folder):
         filename_orig = folder+'/'+i
         filename_new = filename_orig[0:-4]+'-e.mp4'
         if (i[0:-4] + '-e.mp4') not in os.listdir(folder):
-            print(f'converting video {file_num}...')
+            print(f'converting video {file_num}...  ',end='')
             #GET CODEC AND DIMENSION PROPERTIES
             video_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))
             audio_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'a:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))
@@ -35,14 +37,16 @@ def concat(folder):
             key = re.findall(r'(?:video\d+-e.mp4)',filename_new)
             if key in os.listdir(folder):
                 continue
+
+
             if audio_codec != 'aac' or video_codec != 'h264':
-                print('  encoding...')
-                os.system('ffmpeg -y -hide_banner -loglevel error -stats -i {} -vf "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 -c:v libx264 -c:a aac {}'.format(filename_orig, filename_new))
-            elif width != 1920 or height != 1080:
-                print('  padding...')
-                os.system('ffmpeg -y -hide_banner -loglevel error -stats -i {} -vf "scale=w=1280:h=720:force_original_aspect_ratio=1,pad=1280:720:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 {}'.format(filename_orig,filename_new))
+                print('encoding...')
+                os.system(f'ffmpeg -y -hide_banner -loglevel error -stats -i {filename_orig} -vf "scale=w={w}:h={h}:force_original_aspect_ratio=1,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 -c:v libx264 -c:a aac {filename_new}')
+            elif width != w or height != h:
+                print('padding...')
+                os.system(f'ffmpeg -y -hide_banner -loglevel error -stats -i {filename_orig} -vf "scale=w={w}:h={h}:force_original_aspect_ratio=1,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 {filename_new}')
             else:
-                print('  no conversion needed')
+                print('no conversion needed')
                 os.rename(filename_orig,filename_new)
 
         else:
@@ -53,23 +57,23 @@ def concat(folder):
     ##CONCATENATION
     listfile.close()
     comp_path = folder+'/comp.mp4'
-    print('Concatenating videos...')
+    print('concatenating videos...')
     os.system(f'ffmpeg -y -hide_banner -loglevel error -stats -safe 0 -f concat -segment_time_metadata 1 -i {folder+"/listfile.txt"} -c copy {comp_path}')
-    print('Finished')
 
     iolist = open(folder + '/iolist.txt', 'w')
     if intro_path != '':
-        if 'intro.mp4' not in os.listdir(folder):
+        if f'intro{h}.mp4' not in os.listdir(folder):
             os.system('cp {} {}'.format(intro_path, folder))
-        iolist.write(f"file '{folder}/intro.mp4'\n")
+        iolist.write(f"file '{folder}/intro{h}.mp4'\n")
     iolist.write(f"file '{folder}/comp.mp4'\n")
     if outro_path != '':
-        if 'outro.mp4' not in os.listdir(folder):
+        if f'outro{h}.mp4' not in os.listdir(folder):
             os.system('cp {} {}'.format(outro_path, folder))
-        iolist.write(f"file '{folder}/outro.mp4'\n")
+        iolist.write(f"file '{folder}/outro{h}.mp4'\n")
     iolist.close()
+    print('adding intro/outro...')
     os.system(f'ffmpeg -y -hide_banner -loglevel error -stats -safe 0 -f concat -segment_time_metadata 1 -i {folder+"/iolist.txt"} -c copy {folder}/final.mp4')
-
+    print('finished')
     return
 
 def trim_file(_input, output=0, start=0, end=0, dur=0):

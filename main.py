@@ -8,6 +8,7 @@ from pexels import *
 import os
 import subprocess
 from make_videos import *
+import datetime
 
 #name = 'andrew'
 name = 'caleb'
@@ -44,13 +45,16 @@ if __name__ == "__main__":
     #   6. Run again, finished
 
     query = 'it do go down'
-    duration = 60
+    duration = 60   #only affects duration of videos downloaded, concat does all in folder
 
     folder_name = query.replace(' ', '-')
     folder = set_dir(folder_name)
-    if folder_name != '' and query != '' and duration != 0:
+    if query != '' and duration != 0:
+        start_time = time.time()
         #get_yt_videos(query, folder, duration=duration)
         #concat(folder)
+        end_time = time.time()
+        print(f'execution time - {datetime.timedelta(seconds =round(end_time-start_time))}')
         notify('Selenium','','Process finished')
 
     #   Trimming -------------------------------------------------------------------------------------------------------
