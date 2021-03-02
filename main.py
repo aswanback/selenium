@@ -44,7 +44,6 @@ if __name__ == "__main__":
     #   5. Comment out 'get_yt_videos()', uncomment 'concat()'
     #   6. Run again, finished
 
-
     query = 'it do go down'
     duration = 0   #only affects duration of videos downloaded, concat does all in folder
     number = 12
