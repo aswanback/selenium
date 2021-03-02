@@ -139,6 +139,6 @@ def tik_tok_farmer(filepath, number):
     return
 
 
-tik_tok_farmer("/users/calebstevens/documents/Selenium_data/tiktok", 5)
+tik_tok_farmer("/Users/calebstevens/documents/Selenium_data/tiktok", 10)
 
 

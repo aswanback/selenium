@@ -9,8 +9,8 @@ import os
 import subprocess
 from make_videos import *
 
-name = 'andrew'
-#name = 'caleb'
+#name = 'andrew'
+name = 'caleb'
 path_dict = {
     'andrew': '/Users/andrewswanback/Documents/sd',
     'caleb': '/Users/calebstevens/Documents/selenium_data'
