@@ -44,15 +44,19 @@ if __name__ == "__main__":
     #   5. Comment out 'get_yt_videos()', uncomment 'concat()'
     #   6. Run again, finished
 
+
     query = 'it do go down'
-    duration = 60   #only affects duration of videos downloaded, concat does all in folder
+    duration = 0   #only affects duration of videos downloaded, concat does all in folder
+    number = 12
 
     folder_name = query.replace(' ', '-')
+    if folder_name in os.listdir(path):
+        folder_name = folder_name[0:-4]+'-2.mp4'
     folder = set_dir(folder_name)
-    if query != '' and duration != 0:
+    if query != '' and (duration > 0 or number > 0):
         start_time = time.time()
-        #get_yt_videos(query, folder, duration=duration)
-        #concat(folder)
+        get_yt_videos(query, folder,number=number)
+        #concat(folder,resolution='720p')
         end_time = time.time()
         print(f'execution time - {datetime.timedelta(seconds =round(end_time-start_time))}')
         notify('Selenium','','Process finished')

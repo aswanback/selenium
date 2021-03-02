@@ -14,6 +14,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import datetime
 
 #######################################################################
 def get_yt_videos(query, folder, number=0, duration=0):
@@ -31,14 +32,17 @@ def get_yt_videos(query, folder, number=0, duration=0):
     chrome_options.add_experimental_option('prefs', prefs)
     chrome_options.add_argument("--incognito")
     chrome_options.add_argument("--mute-audio")
-    chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--headless")
     web = webdriver.Chrome(options=chrome_options, executable_path='chrome/chromedriver')
     web.get("https://www.youtube.com/results?search_query=" + str(query))
     starting_url = web.current_url
     web.find_element_by_xpath('//*[@id="video-title"]').click()
     while (starting_url == web.current_url):
         time.sleep(0.2)
-    url_list = []
+    archive = open(folder + '/archive.txt', 'r')
+    url_list = [i[0:-2] for i in archive.readlines()]
+    archive.close()
+    print(url_list)
     dur = 0
     num_vids = 0
     while(True):
@@ -63,13 +67,16 @@ def get_yt_videos(query, folder, number=0, duration=0):
 
             ##LENGTH OF NEWEST FILE##
             file = max([os.path.join(folder, f) for f in os.listdir(folder)], key=os.path.getctime)
-            newfile = folder+'/video{}.mp4'.format(num_vids)
+            i = 1
+            newfile = f'video1.mp4'
+            while newfile in os.listdir(folder):
+                newfile = f'video{i}.mp4'
+                i+=1
+            newfile = folder+'/'+newfile
             os.rename(file, newfile)
             time.sleep(0.1)
             dur += editing.get_length(newfile)
-            secs = int(dur % 60)
-            mins = int((dur - secs)/60)
-            print(f'Downloaded  {num_vids}  Duration: {mins}:{secs}')
+            print(f'Downloaded  {num_vids}  Duration: {datetime.timedelta(seconds =round(dur))}')
 
             ##NEW VIDEO##
             web.get(current_url)
@@ -85,7 +92,7 @@ def get_yt_videos(query, folder, number=0, duration=0):
                     web.find_element_by_class_name('ytp-next-button').click()
 
             ##BREAK IF COMPLETE##
-            if (use_dur and dur >= duration) or (use_num and num_vids >=number):
+            if (use_dur and dur >= duration) or (use_num and num_vids>=number):
                 web.close()
                 return
 
