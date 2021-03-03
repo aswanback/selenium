@@ -3,10 +3,17 @@ from youtube import *
 import subprocess
 import os
 
-def concat(folder):
+def concat(folder,resolution='720p'):
     #SET UP INTRO/OUTRO
-    w = 1920    #intro/outro width
-    h = 1080    #intro/outro height
+    if resolution == '1080p':
+        w = 1920
+        h = 1080
+    elif resolution == '720p':
+        w = 1280
+        h = 720
+    else:
+        print('unsupported resolution')
+        return
     intro_path = '' #main.set_dir('' + 'intro.mp4')
     outro_path = main.set_dir('' + f'outro{h}.mp4')
 
@@ -32,6 +39,7 @@ def concat(folder):
             [width,height] = re.split('x',wxh)
             width = width[2:]
             height = height[0:-5]
+            print(f'wid{width}, h{height}')
 
             #REENCODE, PAD IF NECESSARY
             key = re.findall(r'(?:video\d+-e.mp4)',filename_new)
