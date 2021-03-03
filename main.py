@@ -44,14 +44,14 @@ if __name__ == "__main__":
     #   5. Comment out 'get_yt_videos()', uncomment 'concat()'
     #   6. Run again, finished
 
-    query = 'it do go down'
-    duration = 60   #only affects duration of videos downloaded, concat does all in folder
+    query = 'thats a lot of chickens'
+    duration = 750   #only affects duration of videos downloaded, concat does all in folder
 
     folder_name = query.replace(' ', '-')
     folder = set_dir(folder_name)
     if query != '' and duration != 0:
         start_time = time.time()
-        #get_yt_videos(query, folder, duration=duration)
+        get_yt_videos(query, folder, duration=duration)
         #concat(folder)
         end_time = time.time()
         print(f'execution time - {datetime.timedelta(seconds =round(end_time-start_time))}')
