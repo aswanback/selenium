@@ -113,7 +113,7 @@ def tik_tok_farmer(filepath, number):
         os.rename(file, newfile)
         time.sleep(0.1)
 
-        time.sleep(12)
+        #time.sleep(12)
 
         web.get("https://www.tiktok.com/following?lang=en")
         bs = web.find_element_by_xpath("/html/body/div[1]/div/div[2]/div[1]/div/div[1]/div/div[1]/div[1]/a[1]")
@@ -140,5 +140,5 @@ def tik_tok_farmer(filepath, number):
 
 
 tik_tok_farmer("/Users/calebstevens/documents/Selenium_data/tiktok", 10)
-#concat("/users/calebstevens/documents/Selenium_data/tiktok",resolution='720p')
+#concat("/users/calebstevens/documents/Selenium_data/tiktok",resolution='tiktok')
 

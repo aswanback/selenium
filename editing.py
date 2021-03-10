@@ -24,14 +24,14 @@ def concat(folder,resolution='720p'):
     listfile = open(folder + '/listfile.txt', "w")
     files = [name for name in os.listdir(folder) if 'video' in name and '-e.mp4' not in name]
     files.sort()
-
+    print(f'file list: {files}')
     ##MAKE LISTFILE AND REENCODE VIDEOS
     file_num = 1
     for i in files:
         filename_orig = folder+'/'+i
         filename_new = filename_orig[0:-4]+'-e.mp4'
         if (i[0:-4] + '-e.mp4') not in os.listdir(folder):
-            print(f'converting video {file_num}...  ',end='')
+            print(f'converting {i}...  ',end='')
             #GET CODEC AND DIMENSION PROPERTIES
             video_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))
             audio_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'a:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))
