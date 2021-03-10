@@ -41,7 +41,7 @@ def latest_download_file(path):
 def wait_download_complete(filepath):
     fileends = "crdownload"
     while "crdownload" == fileends:
-        time.sleep(1)
+        time.sleep(0.4)
         newest_file = editing.latest_download_file(filepath)
         if "crdownload" in newest_file:
             fileends = "crdownload"

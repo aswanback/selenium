@@ -47,14 +47,17 @@ if __name__ == "__main__":
     query = 'it do go down'
     duration = 0   #only affects duration of videos downloaded, concat does all in folder
     number = 12
+    max_length = 40
 
     folder_name = query.replace(' ', '-')
-    if folder_name in os.listdir(path):
-        folder_name = folder_name[0:-4]+'-2.mp4'
+    i=1
+    while folder_name in os.listdir(path):
+        folder_name = folder_name[0:-2]+f'-{i}'
+        i += 1
     folder = set_dir(folder_name)
     if query != '' and (duration > 0 or number > 0):
         start_time = time.time()
-        get_yt_videos(query, folder,number=number)
+        get_yt_videos(query, folder,max_length=max_length,number=number)
         #concat(folder,resolution='720p')
         end_time = time.time()
         print(f'execution time - {datetime.timedelta(seconds =round(end_time-start_time))}')
