@@ -23,19 +23,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from editing import *
 import misc
 
-#make files go right place
-chrome_options = webdriver.ChromeOptions()
-prefs = {'download.default_directory': "/users/calebstevens/documents/Selenium_data/tiktok/"}
-chrome_options.add_experimental_option('prefs', prefs)
-
-#delta 7 going dark
-chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-chrome_options.add_experimental_option('useAutomationExtension', False)
-
-web = webdriver.Chrome(executable_path='chrome/chromedriver',options=chrome_options)
-
-#Open Browser
-
 
 
 def tik_tok_farmer(filepath, number):
@@ -115,7 +102,7 @@ def tik_tok_farmer(filepath, number):
         download1 = web.find_element_by_xpath("/html/body/main/div[1]/div[2]/div/form/div/div/button")
         download1.click()
 
-
+        misc.wait_download_complete(filepath)
         file = max([os.path.join(filepath, f) for f in os.listdir(filepath)], key=os.path.getctime)
         i = 1
         newfile = f'video1.mp4'
