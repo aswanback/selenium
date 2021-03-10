@@ -11,6 +11,9 @@ def concat(folder,resolution='720p'):
     elif resolution == '720p':
         w = 1280
         h = 720
+    elif resolution == 'tiktok':
+        w = 576
+        h = 1024
     else:
         print('unsupported resolution')
         return
