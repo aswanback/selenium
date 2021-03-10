@@ -81,12 +81,13 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
             ##LENGTH OF NEWEST FILE##
             file = max([os.path.join(folder, f) for f in os.listdir(folder)], key=os.path.getctime)
             i = 1
-            newfile = f'video1.mp4'
+            newfile = 'video1.mp4'
             while newfile in os.listdir(folder):
                 newfile = f'video{i}.mp4'
                 i+=1
             newfile = folder+'/'+newfile
             os.rename(file, newfile)
+            print(f'{file} renamed to {newfile}')
             time.sleep(0.1)
             dur += editing.get_length(newfile)
             print(f'Downloaded  {num_vids}  Duration: {datetime.timedelta(seconds =round(dur))}')
