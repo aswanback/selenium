@@ -10,8 +10,8 @@ import subprocess
 from make_videos import *
 import datetime
 
-name = 'andrew'
-#name = 'caleb'
+#name = 'andrew'
+name = 'caleb'
 path_dict = {
     'andrew': '/Users/andrewswanback/Documents/sd',
     'caleb': '/Users/calebstevens/Documents/selenium_data'
@@ -44,8 +44,8 @@ if __name__ == "__main__":
     #   5. Comment out 'get_yt_videos()', uncomment 'concat()'
     #   6. Run again, finished
 
-    query = 'it do go down'
-    duration = 0   #only affects duration of videos downloaded, concat does all in folder
+    query = "that's a lot of chickens"
+    duration = 750   #only affects duration of videos downloaded, concat does all in folder
     number = 12
 
     folder_name = query.replace(' ', '-')

@@ -20,6 +20,8 @@ import os
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.action_chains import ActionChains
+from editing import *
+import misc
 
 #make files go right place
 chrome_options = webdriver.ChromeOptions()
@@ -113,6 +115,17 @@ def tik_tok_farmer(filepath, number):
         download1 = web.find_element_by_xpath("/html/body/main/div[1]/div[2]/div/form/div/div/button")
         download1.click()
 
+
+        file = max([os.path.join(filepath, f) for f in os.listdir(filepath)], key=os.path.getctime)
+        i = 1
+        newfile = f'video1.mp4'
+        while newfile in os.listdir(filepath):
+            newfile = f'video{i}.mp4'
+            i += 1
+        newfile = filepath + '/' + newfile
+        os.rename(file, newfile)
+        time.sleep(0.1)
+
         time.sleep(12)
 
         web.get("https://www.tiktok.com/following?lang=en")
@@ -140,5 +153,5 @@ def tik_tok_farmer(filepath, number):
 
 
 tik_tok_farmer("/Users/calebstevens/documents/Selenium_data/tiktok", 10)
-
+#concat("/users/calebstevens/documents/Selenium_data/tiktok",resolution='720p')
 
