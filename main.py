@@ -36,14 +36,21 @@ def set_dir(name,filename=''):
 
 if __name__ == "__main__":
 
+    # Youtube settings
     query = "that's a lot of chickens"
     duration = 750      # seconds
     number = 12
     max_length = 40     # seconds
 
+    # Tiktok settings
+    tiktok_num = 10
+
+    # Reddit settings
+    # reddit_num = 0
 
     _temp = query.replace(' ', '-')
     folder_name = _temp.replace("'", '-')
+    folder_name += "-0"
     i=1
     while folder_name in os.listdir(path):
         folder_name = folder_name[0:-2]+f'-{i}'
@@ -53,16 +60,14 @@ if __name__ == "__main__":
         start_time = time.time()
 
         # ----Only mess with this part-------------------------------------------------------------
-        get_yt_videos(query, folder,max_length=max_length,number=number)
-        #get_tiktok_aids() will go here
-        #get_reddit_retardation() will go here as well
+        #get_yt_videos(query, folder,max_length=max_length,number=yt_number)
+        #tik_tok_farmer(folder,tiktok_num)
+        #reddit_retardation(folder,reddit_num) will go here as well
 
         #concat(folder,resolution='720p')
 
         #------------------------------------------------------------------------------------------
-
-        end_time = time.time()
-        print(f'execution time - {datetime.timedelta(seconds =round(end_time-start_time))}')
+        print(f'Execution time - {datetime.timedelta(seconds =round(time.time()-start_time))}')
         notify('Selenium','','Process finished')
 
 
