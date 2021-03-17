@@ -67,7 +67,7 @@ class getme:
         a.click()
 
 def tik_tok_farmer(folder, number):
-    get = getme(folder=folder)  # set up get class
+    get = getme(folder)  # set up get class
     #chrome_options = webdriver.ChromeOptions()
     #prefs = {'download.default_directory': folder}
     #chrome_options.add_experimental_option('prefs', prefs)
@@ -184,5 +184,5 @@ def tik_tok_farmer(folder, number):
         #web.close()
 
 
-tik_tok_farmer("/Users/calebstevens/documents/Selenum-data/tiktok", 10)
+tik_tok_farmer("/Users/calebstevens/documents/Selenium_data/tiktok", 10)
 #concat("/users/calebstevens/documents/Selenium_data/tiktok",resolution='tiktok')

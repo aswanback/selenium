@@ -10,13 +10,13 @@ import subprocess
 from make_videos import *
 import datetime
 
-#name = 'andrew'
-name = 'caleb'
+name = 'andrew'
+#name = 'caleb'
 path_dict = {
     'andrew': '/Users/andrewswanback/Documents/sd',
     'caleb': '/Users/calebstevens/Documents/selenium_data'
 }
-path = path_dict[name]  #anytime you need to use your full filepath, use 'path'
+path = path_dict[name]
 def set_dir(name,filename=''):
     if name == '':
         if filename != '':
@@ -36,20 +36,14 @@ def set_dir(name,filename=''):
 
 if __name__ == "__main__":
 
-    #   Making compilations --------------------------------------------------------------------------------------------
-    #   1. Fill out info below
-    #   2. Comment out 'concat()'
-    #   3. Run
-    #   4. Audit videos and trim as neccessary
-    #   5. Comment out 'get_yt_videos()', uncomment 'concat()'
-    #   6. Run again, finished
-
     query = "that's a lot of chickens"
-    duration = 750   #only affects duration of videos downloaded, concat does all in folder
+    duration = 750      # seconds
     number = 12
-    max_length = 40
+    max_length = 40     # seconds
 
-    folder_name = query.replace(' ', '-')
+
+    _temp = query.replace(' ', '-')
+    folder_name = _temp.replace("'", '-')
     i=1
     while folder_name in os.listdir(path):
         folder_name = folder_name[0:-2]+f'-{i}'
@@ -57,11 +51,20 @@ if __name__ == "__main__":
     folder = set_dir(folder_name)
     if query != '' and (duration > 0 or number > 0):
         start_time = time.time()
+
+        # ----Only mess with this part-------------------------------------------------------------
         get_yt_videos(query, folder,max_length=max_length,number=number)
+        #get_tiktok_aids() will go here
+        #get_reddit_retardation() will go here as well
+
         #concat(folder,resolution='720p')
+
+        #------------------------------------------------------------------------------------------
+
         end_time = time.time()
         print(f'execution time - {datetime.timedelta(seconds =round(end_time-start_time))}')
         notify('Selenium','','Process finished')
+
 
     #   Trimming -------------------------------------------------------------------------------------------------------
     #   Change video number to which one you want to trim
@@ -70,6 +73,7 @@ if __name__ == "__main__":
     vid_num = -1
     if vid_num != -1:
         trim_file(folder+f'/video{vid_num}.mp4',start=0,end=0,dur=0)
+
 
     # Cleaning ---------------------------------------------------------------------------------------------------------
     # deletes all original videos in folder, keeps the re-encoded ones

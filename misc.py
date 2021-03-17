@@ -2,6 +2,7 @@ import urllib.request
 from pexels import *
 import os
 import editing
+import time
 
 def clear(folder):
     os.system('rm {}/*'.format(folder))
@@ -32,21 +33,16 @@ def download_img_by_link(image_url, filepath, filename):
     else:
         print('{} couldn\'t be retrieved'.format(filename))
 
-def latest_download_file(path):
-    os.chdir(path)
-    files = sorted(os.listdir(os.getcwd()), key=os.path.getmtime)
-    newest = files[-1]
-    return newest
-
-def wait_download_complete(filepath):
-    fileends = "crdownload"
-    while "crdownload" == fileends:
+def wait_download_complete(folder,timeout=20):
+    still_working = True
+    elapsed = 0
+    while still_working and elapsed < timeout:
+        still_working = False
+        for filename in os.listdir(folder):
+            if filename.endswith('.crdownload'):
+                still_working = True
         time.sleep(0.4)
-        newest_file = editing.latest_download_file(filepath)
-        if "crdownload" in newest_file:
-            fileends = "crdownload"
-        else:
-            fileends = "none"
+        elapsed += 0.4
 
 def notify(title, subtitle, message):
     t = '-title {!r}'.format(title)

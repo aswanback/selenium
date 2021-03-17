@@ -1,6 +1,6 @@
 import time
 from selenium import webdriver
-import requests  # to get image from the web
+import requests  # to get image from the web2
 import shutil  # to save it locally
 import random as r
 import os
@@ -59,9 +59,8 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
             length_of_vid = web.find_element_by_class_name('ytp-time-duration').text
             match = re.findall(r'(\d+):(\d+)', length_of_vid)
         time_secs = int(match[0][0])*60+int(match[0][1])
-        print(f'video duration: {time_secs}')
+        #print(f'video duration: {time_secs}')
         if current_url not in url_list and time_secs < max_length:
-            print('here')
             archive = open(folder + '/archive.txt', 'a')
             archive.write(current_url+'\n')
             archive.close()
@@ -79,7 +78,8 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
             num_vids += 1
 
             ##LENGTH OF NEWEST FILE##
-            file = max([os.path.join(folder, f) for f in os.listdir(folder)], key=os.path.getctime)
+            time.sleep(0.2)
+            file = max([os.path.join(folder, f) for f in os.listdir(folder) if f != 'archive.txt'], key=os.path.getctime)
             i = 1
             newfile = 'video1.mp4'
             while newfile in os.listdir(folder):
@@ -87,7 +87,6 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
                 i+=1
             newfile = folder+'/'+newfile
             os.rename(file, newfile)
-            print(f'{file} renamed to {newfile}')
             time.sleep(0.1)
             dur += editing.get_length(newfile)
             print(f'Downloaded  {num_vids}  Duration: {datetime.timedelta(seconds =round(dur))}')
@@ -109,8 +108,8 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
             web.get(current_url)
             time.sleep(1)
             WebDriverWait(web, 15).until(EC.presence_of_element_located((By.ID, 'thumbnail')))
+            second_vid = web.find_element_by_id('thumbnail').get_attribute('src')
 
-            second_vid = web.find_element_by_id('thumbnail').get_attribute('href')
             elapsed = 0
             web.get(second_vid)
             while current_url == web.current_url:
@@ -200,8 +199,8 @@ def yt_repost_downloader(query, folder, number=0, view_cutoff=0):
     while len(links) < number and fails < 10:
         WebDriverWait(web, 15).until(EC.presence_of_element_located((By.ID, 'video-title')))
         titles = web.find_elements_by_id("video-title")
-        #num_views = web.find_elements_by_class_name('style-scope ytd-video-meta-block')
-        #num_views = web.find_elements_by_xpath('//*[@id="metadata-line"]')
+        #num_views = web2.find_elements_by_class_name('style-scope ytd-video-meta-block')
+        #num_views = web2.find_elements_by_xpath('//*[@id="metadata-line"]')
         #view_strs = []
         #num_views_2 = len(num_views)*[0]
 
@@ -209,9 +208,9 @@ def yt_repost_downloader(query, folder, number=0, view_cutoff=0):
            # print(i)
             #"//*[@id="metadata-line"]/span[1]"
            # '/html/body/ytd-app/div/ytd-page-manager/ytd-search/div[1]/ytd-two-column-search-results-renderer/div/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]'
-            #num_views_0 = web.find_element_by_xpath('//*[@id="contents"]/following-siblings::ytd-video-renderer[1]/div[1]/div/div[1]/ytd-video-meta-block/div[1]/div[2]/span[1]')
-            #num_views_1 = web.find_element_by_xpath('/html/body/ytd-app/div/ytd-page-manager/ytd-search/div[1]/ytd-two-column-search-results-renderer/div/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-video-renderer[2]/div[1]/div/div[1]/ytd-video-meta-block/div[1]/div[2]/span[1]')
-            #num_views_2 = web.find_element_by_xpath('/html/body/ytd-app/div/ytd-page-manager/ytd-search/div[1]/ytd-two-column-search-results-renderer/div/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-video-renderer[2]/div[1]/div/div[1]/ytd-video-meta-block/div[1]/div[2]/following-sibling::span')
+            #num_views_0 = web2.find_element_by_xpath('//*[@id="contents"]/following-siblings::ytd-video-renderer[1]/div[1]/div/div[1]/ytd-video-meta-block/div[1]/div[2]/span[1]')
+            #num_views_1 = web2.find_element_by_xpath('/html/body/ytd-app/div/ytd-page-manager/ytd-search/div[1]/ytd-two-column-search-results-renderer/div/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-video-renderer[2]/div[1]/div/div[1]/ytd-video-meta-block/div[1]/div[2]/span[1]')
+            #num_views_2 = web2.find_element_by_xpath('/html/body/ytd-app/div/ytd-page-manager/ytd-search/div[1]/ytd-two-column-search-results-renderer/div/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-video-renderer[2]/div[1]/div/div[1]/ytd-video-meta-block/div[1]/div[2]/following-sibling::span')
 
             #print('t',num_views_0)
             #print(num_views_2)
