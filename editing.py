@@ -2,9 +2,9 @@ from misc import *
 from youtube import *
 import subprocess
 import os
+import main
 
 def concat(folder,resolution='720p'):
-    #SET UP INTRO/OUTRO
     if resolution == '1080p':
         w = 1920
         h = 1080
@@ -16,23 +16,21 @@ def concat(folder,resolution='720p'):
         h = 1024
     else:
         print('unsupported resolution')
-        return
+        return # Resolution
     intro_path = '' #main.set_dir('' + 'intro.mp4')
     outro_path = main.set_dir('' + f'outro{h}.mp4')
 
-    #MAKE LIST FILE
     listfile = open(folder + '/listfile.txt', "w")
     files = [name for name in os.listdir(folder) if 'video' in name and '-e.mp4' not in name]
-    files.sort()
-    print(f'file list: {files}')
-    ##MAKE LISTFILE AND REENCODE VIDEOS
+    files.sort() # Make list file
+    # print(f'file list: {files}')
+
     file_num = 1
     for i in files:
         filename_orig = folder+'/'+i
         filename_new = filename_orig[0:-4]+'-e.mp4'
         if (i[0:-4] + '-e.mp4') not in os.listdir(folder):
             print(f'converting {i}...  ',end='')
-            #GET CODEC AND DIMENSION PROPERTIES
             video_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))
             audio_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'a:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))
             wxh = str(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'stream=width,height', '-of', 'csv=p=0:s=x',filename_orig]))
@@ -41,15 +39,11 @@ def concat(folder,resolution='720p'):
             audio_codec = audio_codec[2:-3]
             [width,height] = re.split('x',wxh)
             width = width[2:]
-            height = height[0:-5]
+            height = height[0:-5] # get codec and dimension properties
             print(f'wid{width}, h{height}')
-
-            #REENCODE, PAD IF NECESSARY
             key = re.findall(r'(?:video\d+-e.mp4)',filename_new)
             if key in os.listdir(folder):
                 continue
-
-
             if audio_codec != 'aac' or video_codec != 'h264':
                 print('encoding...')
                 os.system(f'ffmpeg -y -hide_banner -loglevel error -stats -i {filename_orig} -vf "scale=w={w}:h={h}:force_original_aspect_ratio=1,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 -c:v libx264 -c:a aac {filename_new}')
@@ -58,8 +52,7 @@ def concat(folder,resolution='720p'):
                 os.system(f'ffmpeg -y -hide_banner -loglevel error -stats -i {filename_orig} -vf "scale=w={w}:h={h}:force_original_aspect_ratio=1,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 {filename_new}')
             else:
                 print('no conversion needed')
-                os.rename(filename_orig,filename_new)
-
+                os.rename(filename_orig,filename_new) # Reencode and pad if neccessary
         else:
             print(f'{i} already converted')
         listfile.write("file '{}'\n".format(filename_new))
@@ -81,7 +74,7 @@ def concat(folder,resolution='720p'):
         if f'outro{h}.mp4' not in os.listdir(folder):
             os.system('cp {} {}'.format(outro_path, folder))
         iolist.write(f"file '{folder}/outro{h}.mp4'\n")
-    iolist.close()
+    iolist.close() # iolist setup
     print('adding intro/outro...')
     os.system(f'ffmpeg -y -hide_banner -loglevel error -stats -safe 0 -f concat -segment_time_metadata 1 -i {folder+"/iolist.txt"} -c copy {folder}/final.mp4')
     print('finished')

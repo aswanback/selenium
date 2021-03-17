@@ -60,7 +60,7 @@ if __name__ == "__main__":
         start_time = time.time()
 
         # ----Only mess with this part-------------------------------------------------------------
-        #get_yt_videos(query, folder,max_length=max_length,number=yt_number)
+        get_yt_videos(query, folder,max_length=max_length,number=number)
         #tik_tok_farmer(folder,tiktok_num)
         #reddit_retardation(folder,reddit_num) will go here as well
 

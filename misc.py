@@ -3,6 +3,9 @@ from pexels import *
 import os
 import editing
 import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 def clear(folder):
@@ -63,6 +66,7 @@ class getme:
         # self.chrome_options.add_argument("--headless")
         self.chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         self.chrome_options.add_experimental_option('useAutomationExtension', False)
+        self.chrome_options.add_extension('extension_5_1_0_0.crx')
     def by_class_name(self,class_name):
         time.sleep(0.2)
         WebDriverWait(self.web2, self.timeout).until(EC.presence_of_element_located((By.CLASS_NAME, class_name)))

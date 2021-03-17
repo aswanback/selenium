@@ -1,54 +1,46 @@
 import time
 from selenium import webdriver
-import requests  # to get image from the web2
-import shutil  # to save it locally
-import random as r
 import os
 import re
 from selenium.webdriver.support.wait import WebDriverWait
-import editing
-import main
 import misc
 from pexels import *
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import datetime
 
 def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
-    ##SET UP USE MODE##
     use_dur = False
     use_num = False
     if duration > 0:
         use_dur = True
     if number > 0:
         use_num = True
-
-    ##SET UP CHROME##
+    dur = 0
+    num_vids = 0  # Set up number, dur
     chrome_options = webdriver.ChromeOptions()
     prefs = {'download.default_directory': folder}
     chrome_options.add_experimental_option('prefs', prefs)
     chrome_options.add_argument("--incognito")
     chrome_options.add_argument("--mute-audio")
+    chrome_options.add_extension('extension_5_1_0_0.crx')
     #chrome_options.add_argument("--headless")
     web = webdriver.Chrome(options=chrome_options, executable_path='chrome/chromedriver')
     web.get("https://www.youtube.com/results?search_query=" + str(query))
     starting_url = web.current_url
     web.find_element_by_xpath('//*[@id="video-title"]').click()
-    while (starting_url == web.current_url):
-        time.sleep(0.2)
+    while starting_url == web.current_url:
+        time.sleep(0.2) # Set up Chrome and load youtube
     if 'archive.txt' in os.listdir(folder):
         archive = open(folder + '/archive.txt', 'r')
         url_list = [i[0:-2] for i in archive.readlines()]
         archive.close()
         print(url_list)
     else:
-        url_list = []
-    dur = 0
-    num_vids = 0
+        url_list = [] # Archive.txt
     try:
-        while(True):
+        while True:
             ##PUT RIGHT LINK INTO YT1S.COM##
             current_url = web.current_url
             time.sleep(0.5)
@@ -58,27 +50,22 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
             while len(match) == 0:
                 length_of_vid = web.find_element_by_class_name('ytp-time-duration').text
                 match = re.findall(r'(\d+):(\d+)', length_of_vid)
-            time_secs = int(match[0][0])*60+int(match[0][1])
-            #print(f'video duration: {time_secs}')
+            time_secs = int(match[0][0])*60+int(match[0][1]) # Get video duration before download
+            print(f'video duration: {time_secs}')
+
             if current_url not in url_list and time_secs < max_length:
                 archive = open(folder + '/archive.txt', 'a')
                 archive.write(current_url+'\n')
                 archive.close()
-                url_list.append(current_url)
+                url_list.append(current_url) # Archive and url_list
                 web.get('https://yt1s.com/youtube-to-mp4?q={}'.format(current_url))
-
-                ##DOWNLOAD##
                 WebDriverWait(web, 120).until(EC.presence_of_element_located((By.LINK_TEXT, 'Download')))
                 dwnld_button = web.find_element_by_link_text('Download')
                 dwnld_button.click()
-
-                ##CHECK DOWNLOAD COMPLETE##
-                print('Downloading {}'.format(num_vids+1))
+                print(f'Downloading {num_vids+1} - Duration: {time_secs}')
                 misc.wait_download_complete(folder)
-                num_vids += 1
-
-                ##LENGTH OF NEWEST FILE##
-                time.sleep(0.2)
+                num_vids += 1 # Download video
+                time.sleep(1)
                 file = max([os.path.join(folder, f) for f in os.listdir(folder) if f != 'archive.txt'], key=os.path.getctime)
                 i = 1
                 newfile = 'video1.mp4'
@@ -88,10 +75,8 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
                 newfile = folder+'/'+newfile
                 os.rename(file, newfile)
                 time.sleep(0.1)
-                dur += editing.get_length(newfile)
+                dur += editing.get_length(newfile) # Rename video
                 print(f'Downloaded  {num_vids}  Duration: {datetime.timedelta(seconds =round(dur))}')
-
-                ##NEW VIDEO##
                 web.get(current_url)
                 time.sleep(1)
                 WebDriverWait(web, 15).until(EC.presence_of_element_located((By.CLASS_NAME, 'ytp-next-button')))
@@ -102,7 +87,8 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
                     elapsed += 0.2
                     if elapsed > 4:
                         print('Stalled for {}'.format(int(elapsed)))
-                        web.find_element_by_class_name('ytp-next-button').click()
+                        web.find_element_by_class_name('ytp-next-button').click() # Go to next video + stall message
+
             elif current_url not in url_list and time_secs > max_length:
                 print('video too long, getting alternate...')
                 web.get(current_url)
@@ -117,25 +103,22 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
                     time.sleep(0.2)
                     elapsed += 0.2
                     if elapsed > 4:
-                        print('Stalled for {}'.format(int(elapsed)))
-                        web.get(second_vid)
+                        print(f'Stalled for {elapsed:.1f}')
+                        web.get(second_vid) # Get second video in list + stall message
 
-
-            ##BREAK IF COMPLETE##
             if (use_dur and dur >= duration) or (use_num and num_vids>=number):
                 web.close()
-                return
+                return # Break if complete
     finally:
         time.sleep(10)
         web.close()
-
 
 def get_yt_audios(filepath):    #TODO: Add filters
     chrome_options = webdriver.ChromeOptions()
     prefs = {'download.default_directory': '{}'.format(filepath)}
     chrome_options.add_experimental_option('prefs', prefs)
     web = webdriver.Chrome(options=chrome_options, executable_path='chrome/chromedriver')
-    wait = WebDriverWait(web, 15)
+    #wait = WebDriverWait(web, 15)
     web.get('https://www.youtube.com/audiolibrary')
 
     xp1 = '/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div/div[1]/div/div[1]/input'
@@ -146,7 +129,7 @@ def get_yt_audios(filepath):    #TODO: Add filters
     login_button = WebDriverWait(web, 10).until(EC.presence_of_element_located((By.XPATH, xp2)))
     login_button.find_element_by_xpath(xp2).click()
 
-    xp3 = '/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div[1]/div/div/div/div/div[1]/div/div[1]/input'
+    #xp3 = '/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/form/span/section/div/div/div[1]/div[1]/div/div/div/div/div[1]/div/div[1]/input'
     password = WebDriverWait(web, 10).until(EC.presence_of_element_located((By.NAME, 'password')))
     password.send_keys('botsaredumb')
 
@@ -154,7 +137,7 @@ def get_yt_audios(filepath):    #TODO: Add filters
     password_button = WebDriverWait(web, 10).until(EC.presence_of_element_located((By.XPATH, xp4)))
     password_button.click()
 
-    down_wait = WebDriverWait(web, 10).until(EC.presence_of_element_located((By.ID, 'download')))
+    #down_wait = WebDriverWait(web, 10).until(EC.presence_of_element_located((By.ID, 'download')))
     download_buttons = web.find_elements_by_id('download')
     for i in download_buttons:
         i.click()
@@ -262,7 +245,6 @@ def yt_repost_downloader(query, folder, number=0, view_cutoff=0):
             os.rename(file, newfile)
             listfile.write('file ' + "'{}'\n".format(newfile))
     web.close()
-
 def start_yt_upload():
     print('go fuck yourself this aint ready yet')
     return
@@ -290,7 +272,7 @@ def get_yt_videos_archive_1(query, folder, number=0, duration=0):
     web.get("https://www.youtube.com/results?search_query=" + str(query))
     starting_url = web.current_url
     web.find_element_by_xpath('//*[@id="video-title"]').click()
-    while (starting_url == web.current_url):
+    while starting_url == web.current_url:
         time.sleep(0.2)
     archive = open(folder + '/archive.txt', 'r')
     url_list = [i[0:-2] for i in archive.readlines()]
@@ -298,7 +280,7 @@ def get_yt_videos_archive_1(query, folder, number=0, duration=0):
     print(url_list)
     dur = 0
     num_vids = 0
-    while(True):
+    while True:
         ##PUT RIGHT LINK INTO YT1S.COM##
         current_url = web.current_url
         if current_url not in url_list:
