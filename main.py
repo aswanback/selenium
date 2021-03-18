@@ -9,6 +9,8 @@ import os
 import subprocess
 from make_videos import *
 import datetime
+import tiktok_experimental as tiktok
+import misc
 
 name = 'andrew'
 #name = 'caleb'
@@ -36,6 +38,9 @@ def set_dir(name,filename=''):
 
 if __name__ == "__main__":
 
+    use_query_as_folder_name = True        # False while only using tiktok, True while using yt
+    use_tiktok_and_yt_same_folder = False   # True for adding everything in same comp
+
     # Youtube settings
     query = "that's a lot of chickens"
     duration = 750      # seconds
@@ -45,31 +50,41 @@ if __name__ == "__main__":
     # Tiktok settings
     tiktok_num = 10
 
-    # Reddit settings
-    # reddit_num = 0
-
-    _temp = query.replace(' ', '-')
-    folder_name = _temp.replace("'", '-')
-    folder_name += "-0"
+    folder_name = 'tiktok-0'
+    if(use_query_as_folder_name):
+        _temp = query.replace(' ', '-')
+        # noinspection PyRedeclaration
+        folder_name = _temp.replace("'", '-')
+        folder_name += "-0"
+    if(use_tiktok_and_yt_same_folder):
+        folder_name = 'Tiktok-yt-comp-0'
     i=1
     while folder_name in os.listdir(path):
-        folder_name = folder_name[0:-2]+f'-{i}'
+        if(i < 10):
+            folder_name = folder_name[0:-1]+f'{i}'
+        else:
+            folder_name = folder_name[0:-2] + f'{i}'
         i += 1
-    folder = set_dir(folder_name)
+    folder = set_dir(folder_name) # Folder setup
     if query != '' and (duration > 0 or number > 0):
         start_time = time.time()
 
         # ----Only mess with this part-------------------------------------------------------------
         get_yt_videos(query, folder,max_length=max_length,number=number)
-        #tik_tok_farmer(folder,tiktok_num)
+
+        #print(os.listdir(path+'/tiktok23'))
+        #print(os.path.getmtime(path+'/tiktok-1/Untitled.rtf'))
+       # print(os.path.getctime(path + '/tiktok-1/dfb639e8778ac4d89539.mp4'))
+        #file = max([os.path.join(path+'/tiktok-1', f) for f in os.listdir(path+'/tiktok-1')], key=os.path.getctime)
+       # print(file)
+
+        #tiktok.tik_tok_farmer(folder,tiktok_num)
         #reddit_retardation(folder,reddit_num) will go here as well
-
-        #concat(folder,resolution='720p')
-
+        #concat(path+"/Selenium",resolution='tiktok')
         #------------------------------------------------------------------------------------------
+
         print(f'Execution time - {datetime.timedelta(seconds =round(time.time()-start_time))}')
         notify('Selenium','','Process finished')
-
 
     #   Trimming -------------------------------------------------------------------------------------------------------
     #   Change video number to which one you want to trim
@@ -78,7 +93,6 @@ if __name__ == "__main__":
     vid_num = -1
     if vid_num != -1:
         trim_file(folder+f'/video{vid_num}.mp4',start=0,end=0,dur=0)
-
 
     # Cleaning ---------------------------------------------------------------------------------------------------------
     # deletes all original videos in folder, keeps the re-encoded ones

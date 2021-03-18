@@ -8,17 +8,21 @@ def concat(folder,resolution='720p'):
     if resolution == '1080p':
         w = 1920
         h = 1080
+        intro_path = ''  # main.set_dir('' + 'intro.mp4')
+        outro_path = main.set_dir('' + f'outro{h}.mp4')
     elif resolution == '720p':
         w = 1280
         h = 720
+        intro_path = ''  # main.set_dir('' + 'intro.mp4')
+        outro_path = main.set_dir('' + f'outro{h}.mp4')
     elif resolution == 'tiktok':
         w = 576
         h = 1024
+        intro_path = ''  # main.set_dir('' + 'intro.mp4')
+        outro_path = '' # main.set_dir('' + f'outro{h}.mp4')
     else:
         print('unsupported resolution')
-        return # Resolution
-    intro_path = '' #main.set_dir('' + 'intro.mp4')
-    outro_path = main.set_dir('' + f'outro{h}.mp4')
+        return # Resolution solving
 
     listfile = open(folder + '/listfile.txt', "w")
     files = [name for name in os.listdir(folder) if 'video' in name and '-e.mp4' not in name]

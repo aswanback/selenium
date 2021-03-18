@@ -3,7 +3,7 @@
 '''
 import time
 import re
-import requests  # to get image from the web
+import requests  # to get image from the web2
 import shutil  # to save it locally
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -29,13 +29,13 @@ def download_img_by_link(image_url, filepath, filename):
 #def download_filter_youtube_music(filepath,filename,num_tracks=1,mood='', genre='', track_title='', duration=''):
 
 if __name__ == "__main__":
-    web = webdriver.Chrome('chrome/chromedriver')
-    web.get('http://www.pexels.com/');
-    search = web.find_element_by_xpath('/html/body/header/section/div/form/div[1]/input')
+    web2 = webdriver.Chrome('chrome/chromedriver')
+    web2.get('http://www.pexels.com/');
+    search = web2.find_element_by_xpath('/html/body/header/section/div/form/div[1]/input')
     search.send_keys("wave")
     search.submit()
-    pics = web.find_elements_by_class_name('photos__column')
-    matches = re.findall(r'(?=data-big-src=").+(?!\"\s).+?',web.page_source) #re.findall(r'(?:https://images.pexels.com)/photos/.+(?:\")', driver.page_source) #re.findall(r'(?:href=")/photo/.+(?:\">)',driver.page_source)
+    pics = web2.find_elements_by_class_name('photos__column')
+    matches = re.findall(r'(?=data-big-src=").+(?!\"\s).+?',web2.page_source) #re.findall(r'(?:https://images.pexels.com)/photos/.+(?:\")', driver.page_source) #re.findall(r'(?:href=")/photo/.+(?:\">)',driver.page_source)
     new = []
     for i in range(len(matches)):
         new.append(re.split(r'\s',matches[i]))
@@ -59,5 +59,5 @@ if __name__ == "__main__":
             num_written += 1
     print('{} of {} files written'.format(num_written,len(new)-1))
     # time.sleep(10)
-    web.quit()
+    web2.quit()
 '''

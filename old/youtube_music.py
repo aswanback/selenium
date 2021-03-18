@@ -1,6 +1,6 @@
 import time
 import re
-import requests  # to get image from the web
+import requests  # to get image from the web2
 import shutil  # to save it locally
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
