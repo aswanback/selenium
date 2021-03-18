@@ -20,11 +20,11 @@ import os
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from editing import *
-import misc
+from misc import *
 
 
-
-'def reddit_farmer(subreddit, timeframe, number,filepath, ):'
+get = misc.getme("/user/calebstevens/documents/Selenium_data/reddit")
+#def reddit_farmer(subreddit, timeframe, number,filepath, ):
 chrome_options = webdriver.ChromeOptions()
 prefs = {'download.default_directory': "/users/calebstevens/documents/Selenium_data/reddit"}
 chrome_options.add_experimental_option('prefs', prefs)
@@ -54,7 +54,8 @@ download.click()
 
 time.sleep(5)
 
-donwnload = web.find_element_by_id("dlbutton")
+xpath = "/html/body/section[2]/div/div/div[3]/div[1]/div[1]/a"
+download = get.by_xpath(xpath)
 download.click()
 
 #Actions action= new Actions(driver);
