@@ -42,8 +42,8 @@ if __name__ == "__main__":
     use_tiktok_and_yt_same_folder = False   # True for adding everything in same comp
 
     # Youtube settings
-    query = "that's a lot of chickens"
-    duration = 750      # seconds
+    query = "guy farts while doing bench press austin harlow"
+    duration = 60*7     # seconds
     number = 12
     max_length = 40     # seconds
 
@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
         #tiktok.tik_tok_farmer(folder,tiktok_num)
         #reddit_retardation(folder,reddit_num) will go here as well
-        #concat(path+"/Selenium",resolution='tiktok')
+        concat(path+"/that-s-a-lot-of-chickens-3",resolution='720p')
         #------------------------------------------------------------------------------------------
 
         print(f'Execution time - {datetime.timedelta(seconds =round(time.time()-start_time))}')

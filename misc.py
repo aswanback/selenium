@@ -100,25 +100,25 @@ class getme:
         self.folder = folder
 
     def by_id(self,x):
-        #_id_var = by_var(web2=self._web2, timeout=self.timeout, folder=self.folder, _method_var=x, METHOD='id')
-        class_var = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD='name')
-        return class_var.element
-    def by_name(self,x):
-        class_var = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD='name')
+        id = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD='id')
         self._method_var = x
-        return class_var.element
+        return id.element
+    def by_name(self,x):
+        name = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD='name')
+        self._method_var = x
+        return name.element
     def by_class_name(self,x):
         class_var = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD='class_name')
         self._method_var = x
         return class_var.element
     def by_xpath(self,x):
-        class_var = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD='xpath')
+        xpath = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD='xpath')
         self._method_var = x
-        return class_var.element
+        return xpath.element
     def by_link_text(self,x):
-        class_var = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD="link_text")
-        self._method_var = x
-        return class_var.element
+        link_text = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD="link_text")
+        self._method_var = link_text
+        return link_text.element
     def site(self, site):
         time.sleep(0.2)
         self._web2.get(site)
@@ -131,17 +131,22 @@ class by_var(object):
     element = 12
     def __init__(self, web2, _method_var, timeout,METHOD):
         if METHOD == "id":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.ID, _method_var)))
+            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.ID, _method_var)),message=f'get.by_id failed to find element in {timeout} seconds')
+        if METHOD == "ids":
+            self.elements = WebDriverWait(web2, timeout).until(EC.presence_of_all_elements_located((By.ID, _method_var)),message=f'get.by_id failed to find element in {timeout} seconds')
         if METHOD == "name":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.NAME, _method_var)))
+            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.NAME, _method_var)),message=f'get.by_name failed to find element in {timeout} seconds')
         if METHOD == "class_name":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.CLASS_NAME, _method_var)))
+            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.CLASS_NAME, _method_var)),message=f'get.by_class_name failed to find element in {timeout} seconds')
         if METHOD == "xpath":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.XPATH, _method_var)))
+            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.XPATH, _method_var)),message=f'get.by_xpath failed to find element in {timeout} seconds')
         if METHOD == "link_text":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.LINK_TEXT, _method_var)))
+            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.LINK_TEXT, _method_var)),message=f'get.by_link_text failed to find element in {timeout} seconds')
+
     def click(self):
         print(self.element)
         self.element.click()
     def send_keys(self,keys):
         self.element.send_keys(keys)
+    def get_attribute(self,x):
+        self.element.get_attribute(x)

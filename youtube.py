@@ -20,21 +20,10 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
         use_num = True
     dur = 0
     num_vids = 0  # Set up number, dur
-    get = misc.getme(folder)
-    '''
-    chrome_options = webdriver.ChromeOptions()
-    prefs = {'download.default_directory': folder}
-    chrome_options.add_experimental_option('prefs', prefs)
-    chrome_options.add_argument("--incognito")
-    chrome_options.add_argument("--mute-audio")
-    chrome_options.add_extension('extension_5_1_0_0.crx')
-    #chrome_options.add_argument("--headless")
-    web = webdriver.Chrome(options=chrome_options, executable_path='chrome/chromedriver')
-    '''
+    get = misc.getme(folder,mute=True)
     get.site("https://www.youtube.com/results?search_query=" + str(query))
     starting_url = get.current_url()
     get.by_xpath('//*[@id="video-title"]').click()
-    #web.find_element_by_xpath('//*[@id="video-title"]').click()
     while starting_url == get.current_url():
         time.sleep(0.2) # Set up Chrome and load youtube
     if 'archive.txt' in os.listdir(folder):
@@ -46,19 +35,49 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
         url_list = [] # Archive.txt
     try:
         while True:
-            ##PUT RIGHT LINK INTO YT1S.COM##
             current_url = get.current_url()
             time.sleep(0.5)
-            #WebDriverWait(web, 120).until(EC.presence_of_element_located((By.CLASS_NAME, 'ytp-time-duration')))
-            #length_of_video = web.find_element_by_class_name('ytp-time-duration').text
             length_of_video = get.by_class_name('ytp-time-duration').text
             match = re.findall(r'(\d+):(\d+)',length_of_video)
             while len(match) == 0:
-                #length_of_vid = web.find_element_by_class_name('ytp-time-duration').text
                 length_of_vid = get.by_class_name('ytp-time-duration').text
                 match = re.findall(r'(\d+):(\d+)', length_of_vid)
             time_secs = int(match[0][0])*60+int(match[0][1]) # Get video duration before download
             print(f'video duration: {time_secs}')
+
+            if current_url in url_list:
+                print("Skipping this video")
+                get.by_class_name('ytp-next-button').click()
+                elapsed = 0
+                while current_url == get.current_url():
+                    time.sleep(0.2)
+                    elapsed += 0.2
+                    if elapsed > 4:
+                        print('Stalled for {}'.format(int(elapsed)))  # Go to next video + stall message
+                        get.by_class_name('ytp-next-button').click()
+
+            if current_url not in url_list and time_secs > max_length:
+                print('video too long, getting alternate...')
+                #get.site(current_url)
+                time.sleep(0.4)
+                #TODO: FIND THE GODDAMN XPATH OR SOME SHIT IDFK
+                #xpath = "/html/body/ytd-app/div/ytd-page-manager/ytd-watch-flexy/div[5]/div[2]/div/div[3]/ytd-watch-next-secondary-results-renderer/div[2]/ytd-compact-video-renderer[1]/div[1]/ytd-thumbnail/a"
+                #class_name = "yt-simple-endpoint style-scope ytd-compact-video-renderer"
+                #thumb_list = get.by_id('thumbnail').get_attribute('href')
+                #rel_xpath = "(//a[@id='video-title'])[position()>1]"
+                #second_vid = get.by_xpath(rel_xpath).get_attribute('href')
+                get.by_class_name('ytp-next-button').click()
+                elapsed = 0
+                #second_vid = f'https://www.youtube.com{thumb_list}'
+                #get.site(second_vid)
+                while current_url == get.current_url():
+                    time.sleep(0.2)
+                    elapsed += 0.2
+                    if elapsed > 4:
+                        print(f'Stalled for {elapsed:.1f}')
+                        #get.site(second_vid) # Get second video in list + stall message
+                        get.by_class_name('ytp-next-button').click()
+                print("new video got from skip")
 
             if current_url not in url_list and time_secs < max_length:
                 archive = open(folder + '/archive.txt', 'a')
@@ -66,9 +85,6 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
                 archive.close()
                 url_list.append(current_url) # Archive and url_list
                 get.site(f'https://yt1s.com/youtube-to-mp4?q={current_url}')
-                #WebDriverWait(web, 120).until(EC.presence_of_element_located((By.LINK_TEXT, 'Download')))
-                #dwnld_button = web.find_element_by_link_text('Download')
-                #dwnld_button.click()
                 get.by_link_text("Download").click()
                 print(f'Downloading {num_vids+1} - Duration: {time_secs}')
                 misc.wait_download_complete(folder)
@@ -84,38 +100,17 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
                 os.rename(file, newfile)
                 time.sleep(0.1)
                 dur += editing.get_length(newfile) # Rename video
-                print(f'Downloaded  {num_vids}  Duration: {datetime.timedelta(seconds =round(dur))}')
+                print(f'Downloaded  {num_vids}') #  Total duration: {datetime.timedelta(seconds =round(dur))}')
                 get.site(current_url)
                 time.sleep(1)
-                #WebDriverWait(web, 15).until(EC.presence_of_element_located((By.CLASS_NAME, 'ytp-next-button')))
-                #web.find_element_by_class_name('ytp-next-button').click()
                 get.by_class_name('ytp-next-button').click()
                 elapsed = 0
                 while current_url == get.current_url():
                     time.sleep(0.2)
                     elapsed += 0.2
                     if elapsed > 4:
-                        print('Stalled for {}'.format(int(elapsed)))
-                        #web.find_element_by_class_name('ytp-next-button').click() # Go to next video + stall message
+                        print('Stalled for {}'.format(int(elapsed))) # Go to next video + stall message
                         get.by_class_name('ytp-next-button').click()
-
-            elif current_url not in url_list and time_secs > max_length:
-                print('video too long, getting alternate...')
-                get.site(current_url)
-                time.sleep(1)
-                xpath = "/html/body/ytd-app/div/ytd-page-manager/ytd-watch-flexy/div[5]/div[2]/div/div[3]/ytd-watch-next-secondary-results-renderer/div[2]/ytd-compact-video-renderer[1]/div[1]/ytd-thumbnail/a"
-                #WebDriverWait(web, 15).until(EC.presence_of_element_located((By.XPATH, xpath)))
-                #second_vid = web.find_element_by_id(xpath).get_attribute('href')
-                second_vid = get.by_id(xpath).get_attribute('href')
-
-                elapsed = 0
-                get.site(second_vid)
-                while current_url == get.current_url():
-                    time.sleep(0.2)
-                    elapsed += 0.2
-                    if elapsed > 4:
-                        print(f'Stalled for {elapsed:.1f}')
-                        get.site(second_vid) # Get second video in list + stall message
 
             if (use_dur and dur >= duration) or (use_num and num_vids>=number):
                 get.close()

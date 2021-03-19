@@ -1,11 +1,4 @@
-
 '''
-import pyttsx3
-engine = pyttsx3.init()
-engine.say("I will speak this text")
-engine.runAndWait()
-'''
-
 import pyttsx3
 engine = pyttsx3.init() # object creation
 
@@ -13,7 +6,6 @@ engine = pyttsx3.init() # object creation
 rate = engine.getProperty('rate')   # getting details of current speaking rate
 print (rate)                        #printing current voice rate
 engine.setProperty('rate', 125)     # setting up new voice rate
-
 
 """VOLUME"""
 volume = engine.getProperty('volume')   #getting to know current volume level (min=0 and max=1)
@@ -34,34 +26,37 @@ engine.stop()
 # On linux make sure that 'espeak' and 'ffmpeg' are installed
 engine.save_to_file('Hello World', 'test.mp3')
 engine.runAndWait()
-
-
-
 '''
-# Import the required module for text  
-# to speech conversion 
+
+import pyttsx3
+engine = pyttsx3.init()
+v = list(engine.getProperty('voices'))
+new_v = [v[0],v[7],v[10],v[11],v[17],v[28], v[32],v[33],v[37],v[40],v[41]]
+voice_list = []
+lang_list = []
+for voice in new_v:
+    print(f'age: {voice.age}  gender: {voice.gender}  id: {voice.id}  languages: {voice.languages}  name:{voice.name}')
+    engine.setProperty('voice', voice.id)
+    if 'en' in voice.languages[0]:
+        voice_list.append(voice.id)
+        lang_list.append(voice.languages[0])
+    engine.say("I'm an engineer!")
+#print(voice_list)
+#print(lang_list)
+#engine.runAndWait()
+
+# https://pyttsx3.readthedocs.io/en/latest/engine.html
+# English speakers: Alex    daniel  fiona       Fred    karen   moira   rishi   samantha    tessa   veena   Victoria
+# Dialect:          en_US   en_GB   en-scotland en_US   en_AU   en_IE   en_IN   en_US       en_ZA   en_IN   en_US
+
+
+# https://gtts.readthedocs.io/en/latest/module.html#localized-accents
+'''
 from gtts import gTTS
-
-# This module is imported so that we can  
-# play the converted audio 
 import os
-
-# The text that you want to convert to audio 
-mytext = 'Welcome to geeksforgeeks!'
-
-# Language in which you want to convert 
+mytext = 'I have genital herpes'
 language = 'en'
-
-# Passing the text and language to the engine,  
-# here we have marked slow=False. Which tells  
-# the module that the converted audio should  
-# have a high speed 
-myobj = gTTS(text=mytext, lang=language, slow=False)
-
-# Saving the converted audio in a mp3 file named 
-# welcome  
+myobj = gTTS(text=mytext, lang=language, slow=False,tld='co.uk')
 myobj.save("welcome.mp3")
-
-# Playing the converted file 
-os.system("mpg321 welcome.mp3") 
+os.system("mpg321 -g 100 welcome.mp3")
 '''
