@@ -52,8 +52,6 @@ download.send_keys(url)
 download = web.find_element_by_xpath("/html/body/section[1]/div/div[1]/div/form/div/div/button")
 download.click()
 
-time.sleep(5)
-
 xpath = "/html/body/section[2]/div/div/div[3]/div[1]/div[1]/a"
 download = get.by_xpath(xpath)
 download.click()

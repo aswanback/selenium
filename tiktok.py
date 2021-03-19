@@ -85,8 +85,8 @@ def tik_tok_farmer(folder, number):
         #web.get(site1)
         get.site(site1)
 
-        xpath = "/html/body/div/div[2]/div[1]/form/div/div[1]/div/div/input"
-        login = get.by_xpath(xpath)
+        classname = "inputtext"
+        login = get.by_class_name(classname)
         #WebDriverWait(web2, 20).until(EC.presence_of_element_located((By.XPATH, xpath)))
         #login = web.find_element_by_xpath(xpath)
         login.send_keys("nrubenstein0405@gmail.com")

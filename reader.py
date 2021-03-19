@@ -2,6 +2,8 @@
 import cv2
 import pytesseract
 
+
+
 # Mention the installed location of Tesseract-OCR in your system
 pytesseract.pytesseract.tesseract_cmd = '/usr/local/Cellar/tesseract/4.1.1/bin/tesseract'
 
