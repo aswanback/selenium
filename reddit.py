@@ -23,7 +23,7 @@ from editing import *
 from misc import *
 
 
-get = misc.getme("/user/calebstevens/documents/Selenium_data/reddit")
+get = misc.getme("/users/calebstevens/documents/Selenium_data/reddit")
 #def reddit_farmer(subreddit, timeframe, number,filepath, ):
 chrome_options = webdriver.ChromeOptions()
 prefs = {'download.default_directory': "/users/calebstevens/documents/Selenium_data/reddit"}
