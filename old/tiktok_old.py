@@ -25,7 +25,7 @@ import misc
 class getme:
     timeout = 20
     chrome_options = webdriver.ChromeOptions()
-    web2 = webdriver.Chrome(executable_path='chrome/chromedriver', options=chrome_options)
+    web2 = webdriver.Chrome(executable_path='../chrome/chromedriver', options=chrome_options)
     def __init__(self,folder):
         prefs = {'download.default_directory': folder}
         self.chrome_options.add_experimental_option('prefs', prefs)

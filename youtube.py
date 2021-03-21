@@ -1,10 +1,4 @@
-import time
-from selenium import webdriver
-import os
-import re
-from selenium.webdriver.support.wait import WebDriverWait
-import misc
-from pexels import *
+from old.pexels import *
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -21,16 +15,6 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
     dur = 0
     num_vids = 0  # Set up number, dur
     get = misc.getme(folder,mute=True)
-    '''
-    chrome_options = webdriver.ChromeOptions()
-    prefs = {'download.default_directory': folder}
-    chrome_options.add_experimental_option('prefs', prefs)
-    chrome_options.add_argument("--incognito")
-    chrome_options.add_argument("--mute-audio")
-    chrome_options.add_extension('extension_5_1_0_0.crx')
-    #chrome_options.add_argument("--headless")
-    web = webdriver.Chrome(options=chrome_options, executable_path='chrome/chromedriver')
-    '''
     get.site("https://www.youtube.com/results?search_query=" + str(query))
     starting_url = get.current_url()
     get.by_xpath('//*[@id="video-title"]').click()
@@ -61,7 +45,6 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
 
             if current_url not in url_list and time_secs > max_length:
                 print('video too long, getting alternate...')
-                #get.site(current_url)
                 time.sleep(1)
 
                 xpath = '/html/body/ytd-app/div/ytd-page-manager/ytd-watch-flexy/div[5]/div[2]/div/div[3]/ytd-watch-next-secondary-results-renderer/div[2]/ytd-compact-video-renderer[2]/div[1]/ytd-thumbnail/a'

@@ -1,18 +1,10 @@
-import time
-import re
-from selenium import webdriver
 from editing import *
-import misc as m
 from youtube import *
-from pexels import *
-import os
-import subprocess
-from make_videos import *
+from old.make_videos import *
 import datetime
-import tiktok_experimental as tiktok
+import tiktok as tiktok
 import misc
 from reddit import reddit
-
 name = 'andrew'
 #name = 'caleb'
 path_dict = {
@@ -35,57 +27,55 @@ def set_dir(name,filename=''):
         full_path = '{}/{}/{}'.format(path, name,filename)
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
-    return full_path
+    return full_path # path setu
 
 if __name__ == "__main__":
     start_time = time.time()
-
     s = {
+        # ------------------------------------------
         'youtube': {
-            'Run_this?': False,
+            'Run_this?': True,
             'query': 'look at all those chickens',
             'folder_name': 'default',
-            'number': 3,                           # set this to 0 to ignore it
+            'number': 3,                            # set this to 0 to ignore it
             'duration': 0,                          # total comp duration - set this to 0 to ignore it
-            'max_length': 40,                       # in seconds
+            'max_length': 40,
         },
+        # ------------------------------------------
         'tiktok': {
             'Run_this?': False,
             'folder_name': 'default',
             'number': 12,
         },
+        # -------------------------------------------
         'reddit': {
             'Run_this?': True,
             'folder_name': 'default',
             'subreddit': 'r/memes',
             'num_imgs': 20,
         },
-        'use_same_folder_for_all': False,   # do you want to use the same folder for tiktok, reddit and/or youtube?
-        'folder_name_for_all': 'default',   # won't be used unless the above is True
-        'replace_folders': False,           # replace your folder every time you run or make a new one?
-        'concat_immediatedly': False,        # TODO: actually do this. concat all videos in the folder(s) you just downloaded. if different folder, are separate
-        'notify?': False                    # get a notification when python has finished?
+        # -------------------------------------------
+        'use_same_folder_for_all': False,               # do you want to use the same folder for tiktok, reddit and/or youtube?
+        'folder_name_for_all': 'default',               # won't be used unless the above is True
+        'replace_folders': False,                       # replace your folder every time you run or make a new one?
+        'concat_immediatedly': False,                   # TODO: actually do this. concat all videos in the folder(s) you just downloaded. if different folder, are separate
+        # -------------------------------------------
+
+        'clean': {
+            'Run_this?': False,
+            '/path/to/folder': None,        # path starting from your directory already set up
+            'hard?': False                  # hard?=True will remove everything from a meme folder except the final comp and links txt file
+        },
+        'trim': {
+            'Run_this?': False,
+            'folder_of_video': None,
+            'video_name_to_trim': None,
+            'start': 0,
+            'end': 0,                       # leave as zero to use 'duration'
+            'duration': 0,                  # leave as zero to use 'end' timestamp
+        },
+        'notify?': False,  # get a notification when python has finished?
     }
-
-
-    #   Trimming -------------------------------------------------------------------------------------------------------
-    #   Change video number to which one you want to trim
-    #   Change start to whenever clip should start
-    #   Change end or duration based on desire, leave other as zero
-
-    # folder = 'bruh'
-    # vid_num = -1
-    # trim_file(folder+f'/video{vid_num}.mp4',start=0,end=0,dur=0)
-
-
-    # Cleaning ---------------------------------------------------------------------------------------------------------
-    # deletes all original videos in folder, keeps the re-encoded ones
-    # set 'hard' to 'True' to hard clean, removing everything except source links and final compilation
-
-    # folder_to_clean = ''
-    # misc.clean(folder+'/'+folder_to_clean,hard=False)
-
-    # ------------------------------------------------------------------------------------------------------------------
 
     default_comp_name = 'multi_source1'
     default_yt_name = s['youtube']['query'].translate({ord(i): '-' for i in '/ '})+'1'
@@ -140,73 +130,26 @@ if __name__ == "__main__":
 
     if s['youtube']['Run_this?']:   # set directory name if running it
         youtube_dir = set_dir(yt_name)
-        #time.sleep(1)
-        #print("dummy ran youtube")
         get_yt_videos(s['youtube']['query'],youtube_dir,s['youtube']['max_length'],s['youtube']['number'],s['youtube']['duration'])
     if s['tiktok']['Run_this?']:
         tiktok_dir = set_dir(tt_name)
-        #time.sleep(1)
-        #print("dummy ran tiktok")
         tiktok.tik_tok_farmer(tiktok_dir,s['tiktok']['number'])
     if s['reddit']['Run_this?']:
         reddit_dir = set_dir(rd_name)
-        #time.sleep(1)
-        #print("dummy ran reddit")
         reddit(reddit_dir,s['reddit']['subreddit'])
 
+    # Clean folder
+    if s['clean']['Run_this?']:
+        misc.clean(path + '/' + s['clean']['/path/to/folder'], hard=s['clean']['hard?'])
+
+    # Trim a file
+    if s['trim']['Run_this?']:
+        trim_file(s['trim']['folder_of_video']+s['trim']['video_name_to_trim'],start=s['trim']['start'],end=s['trim']['end'],dur=s['trim']['dur'])
+
+
+    # Show run time, notify if wanted
     print(f'Execution time - {datetime.timedelta(seconds=round(time.time() - start_time))}')
     if s['notify?']:
-        notify('Selenium','','Process finished')
-
-
-
-
-
-    '''
-    # Youtube settings
-    query = "that's a lot of chickens"
-    duration = 750      # seconds
-    number = 12
-    max_length = 35     # seconds
-
-    # Tiktok settings
-    tiktok_num = 10
-
-    folder_name = 'tiktok-0'
-    if(use_query_as_folder_name):
-        _temp = query.replace(' ', '-')
-        # noinspection PyRedeclaration
-        folder_name = _temp.replace("'", '-')
-        folder_name += "-0"
-    if(use_tiktok_and_yt_same_folder):
-        folder_name = 'Tiktok-yt-comp-0'
-    i=1
-    while folder_name in os.listdir(path):
-        if(i < 10):
-            folder_name = folder_name[0:-1]+f'{i}'
-        else:
-            folder_name = folder_name[0:-2] + f'{i}'
-        i += 1
-    folder = set_dir(folder_name) # Folder setup
-    '''
-    #if query != '' and (duration > 0 or number > 0):
-
-
-        # ----Only mess with this part-------------------------------------------------------------
-        #get_yt_videos(query, folder,max_length=max_length,number=number)
-
-        #print(os.listdir(path+'/tiktok23'))
-        #print(os.path.getmtime(path+'/tiktok-1/Untitled.rtf'))
-       # print(os.path.getctime(path + '/tiktok-1/dfb639e8778ac4d89539.mp4'))
-        #file = max([os.path.join(path+'/tiktok-1', f) for f in os.listdir(path+'/tiktok-1')], key=os.path.getctime)
-       # print(file)
-
-        #tiktok.tik_tok_farmer(folder,tiktok_num)
-    #folder = set_dir("reddit_test")
-   # misc.download_by_link("https://i.imgur.com/hLZdUL9.gif",folder,'vid1.gif')
-    #reddit(folder)
-        #concat(path+"/Selenium",resolution='tiktok')
-        #------------------------------------------------------------------------------------------
-
+        notify('Selenium','','Process finished') # Code that interprets the dictionary and runs everything based on it
 
 

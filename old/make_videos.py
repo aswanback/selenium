@@ -1,10 +1,6 @@
 import editing
-import youtube
-import os
-import misc
-import subprocess
 import pexels
-import main
+
 
 def meme(query, folder, outname, number=0, duration=0):
     pass
