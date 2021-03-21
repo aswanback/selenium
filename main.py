@@ -1,6 +1,5 @@
 from editing import *
 from youtube import *
-from old.make_videos import *
 import datetime
 import tiktok as tiktok
 import misc
@@ -12,19 +11,19 @@ path_dict = {
     'caleb': '/Users/calebstevens/Documents/selenium_data'
 }
 path = path_dict[name]
-def set_dir(name,filename=''):
-    if name == '':
+def set_dir(foldername,filename=''):
+    if foldername == '':
         if filename != '':
             return path+'/'+filename
         else:
             return path
     if filename == '':
-        full_path = '{}/{}'.format(path, name)
+        full_path = '{}/{}'.format(path, foldername)
         if not os.path.exists(full_path):
             os.mkdir(full_path)
     else:
-        dir_path = '{}/{}'.format(path, name)
-        full_path = '{}/{}/{}'.format(path, name,filename)
+        dir_path = '{}/{}'.format(path, foldername)
+        full_path = '{}/{}/{}'.format(path, foldername,filename)
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
     return full_path # path setu # set up # Set up path
@@ -89,6 +88,7 @@ if __name__ == "__main__":
         }
     }
 
+
     default_comp_name = s['defaults']['multimedia']
     default_yt_name = s['youtube']['query'].translate({ord(i): '-' for i in '/ '})+'1'
     default_rd_name = s['defaults']['reddit']
@@ -96,16 +96,15 @@ if __name__ == "__main__":
     # figure out what to call the folder if it's all in same folder
     if s['use_same_folder_for_all']:
         if s['folder_name_for_all'] == 'default':
-            name = default_comp_name[:-1]
             comp_i = 1
-            if s['replace_folders'] == False:
+            if not s['replace_folders']:
                 while default_comp_name[:-len(str(comp_i-1))] + f'{comp_i}' in os.listdir(path): comp_i += 1
             name = default_comp_name[0:-1] + f'{comp_i}'
 
         else:
             default_name = s['folder_name_for_all']
             comp_i = 1
-            if s['replace_folders'] == False:
+            if not s['replace_folders']:
                 while default_name[:-len(str(comp_i - 1))] + f'{comp_i}' in os.listdir(path): comp_i += 1
             name = default_name[0:-1] + f'{comp_i}'
 
@@ -116,7 +115,7 @@ if __name__ == "__main__":
     else:
         yt_name = default_yt_name[0:-1]
         yt_i = 1
-        if s['replace_folders'] == False:
+        if not s['replace_folders']:
             while default_yt_name[0:-len(str(yt_i-1))] + f'{yt_i}' in os.listdir(path): yt_i += 1
             yt_name = default_yt_name[0:-1] + f'{yt_i}'
         if s['youtube']['folder_name'] != 'default':
@@ -124,7 +123,7 @@ if __name__ == "__main__":
 
         tt_name = default_yt_name[0:-1]
         tt_i = 1
-        if s['replace_folders'] == False:
+        if not s['replace_folders']:
             while default_tt_name[0:-len(str(tt_i-1))] + f'{tt_i}' in os.listdir(path):
                 tt_i += 1
             tt_name = default_tt_name[0:-len(str(tt_i-1))] + f'{tt_i}'
@@ -133,12 +132,16 @@ if __name__ == "__main__":
 
         rd_name = default_yt_name[0:-1]
         rd_i = 1
-        if s['replace_folders'] == False:
+        if not s['replace_folders']:
             while default_rd_name[0:-len(str(rd_i-1))] + f'{rd_i}' in os.listdir(path):
                 rd_i += 1
             rd_name = default_rd_name[0:-len(str(rd_i-1))] + f'{rd_i}'
         if s['reddit']['folder_name'] != 'default':
             rd_name = s['reddit']['folder_name']
+
+    youtube_dir = "you should not see this message - youtube_dir error"  # initialize these to purposefully crash
+    tiktok_dir = "you should not see this message - tiktok_dir error"
+    reddit_dir = "you should not see this message - reddit_dir error"
 
     if s['youtube']['Run_this?']:   # set directory name if running it
         youtube_dir = set_dir(yt_name)
@@ -151,7 +154,7 @@ if __name__ == "__main__":
         reddit(reddit_dir,s['reddit']['subreddit'])
 
     # Concat videos
-    if(s['concat']):
+    if s['concat']:
         if s['use_same_folder_for_all']:
             concat(set_dir(yt_name),resolution=s['resolution']['multimedia'])
         else:

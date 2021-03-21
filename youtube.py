@@ -4,6 +4,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import datetime
 import editing
+import time
+import re
+import os
+
 
 def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
     use_dur = False
