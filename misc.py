@@ -30,8 +30,8 @@ def folder_duration(folder):
 def download_video_by_link(url,filepath,filename):
     urllib.request.urlretrieve(url, '{}/{}.mp4'.format(filepath,filename))
 
-def download_img_by_link(image_url, filepath, filename):
-    r = requests.get(image_url, stream=True) # Open the url image, set stream to True, this will return the stream content.
+def download_by_link(url, filepath, filename):
+    r = requests.get(url, stream=True) # Open the url image, set stream to True, this will return the stream content.
     if r.status_code == 200:    # Check if the image was retrieved successfully
         r.raw.decode_content = True # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
         with open('{}/{}'.format(filepath,filename), 'wb') as f: # Open a local file with wb permission.
@@ -77,10 +77,6 @@ def notify(title, subtitle, message):
     m = '-message {!r}'.format(message)
     os.system('terminal-notifier {}'.format(' '.join([m, t, s])))
 
-
-
-
-
 class getme:
     timeout = 20
     def __init__(self,folder,incognito=False,headless=False,mute=False):
@@ -96,50 +92,48 @@ class getme:
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option('useAutomationExtension', False)
         chrome_options.add_extension('extension_5_1_0_0.crx')
-        self._web2 = webdriver.Chrome(executable_path='chrome/chromedriver', options=chrome_options)
+        self.web = webdriver.Chrome(executable_path='chrome/chromedriver', options=chrome_options)
         self.folder = folder
-
     def by_id(self,x):
-        #_id_var = by_var(web2=self._web2, timeout=self.timeout, folder=self.folder, _method_var=x, METHOD='id')
-        class_var = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD='name')
-        return class_var.element
+        id = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD='id')
+        return id.element
     def by_name(self,x):
-        class_var = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD='name')
+        name = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD='name')
         self._method_var = x
-        return class_var.element
+        return name.element
     def by_class_name(self,x):
-        class_var = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD='class_name')
+        class_name = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD='class_name')
         self._method_var = x
-        return class_var.element
+        return class_name.element
     def by_xpath(self,x):
-        class_var = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD='xpath')
+        xpath = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD='xpath')
         self._method_var = x
-        return class_var.element
+        return xpath.element
     def by_link_text(self,x):
-        class_var = by_var(web2=self._web2, timeout=self.timeout, _method_var=x, METHOD="link_text")
+        link_text = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD="link_text")
         self._method_var = x
-        return class_var.element
+        return link_text.element
     def site(self, site):
         time.sleep(0.2)
-        self._web2.get(site)
+        self.web.get(site)
     def current_url(self):
-        return self._web2.current_url
+        return self.web.current_url
     def close(self):
-        self._web2.close()
+        self.web.close()
 
 class by_var(object):
     element = 12
     def __init__(self, web2, _method_var, timeout,METHOD):
         if METHOD == "id":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.ID, _method_var)))
+            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.ID, _method_var)),message="Couldn't get by id")
         if METHOD == "name":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.NAME, _method_var)))
+            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.NAME, _method_var)),message="Couldn't get by name")
         if METHOD == "class_name":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.CLASS_NAME, _method_var)))
+            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.CLASS_NAME, _method_var)),message="Couldn't get by class name")
         if METHOD == "xpath":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.XPATH, _method_var)))
+            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.XPATH, _method_var)),message="Couldn't get by xpath")
         if METHOD == "link_text":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.LINK_TEXT, _method_var)))
+            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.LINK_TEXT, _method_var)),message="Couldn't get by link text")
     def click(self):
         print(self.element)
         self.element.click()

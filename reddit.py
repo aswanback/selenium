@@ -1,4 +1,3 @@
-import action as action
 from selenium.webdriver.chrome import options
 from selenium.webdriver.common.keys import Keys
 import time
@@ -6,61 +5,29 @@ import re
 import requests  # to get image from the web
 import shutil  # to save it locally
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import random as r
 import os
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from editing import *
-from misc import *
+import misc
 
-
-get = misc.getme("/user/calebstevens/documents/Selenium_data/reddit")
-#def reddit_farmer(subreddit, timeframe, number,filepath, ):
-chrome_options = webdriver.ChromeOptions()
-prefs = {'download.default_directory': "/users/calebstevens/documents/Selenium_data/reddit"}
-chrome_options.add_experimental_option('prefs', prefs)
-
-
-chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-chrome_options.add_experimental_option('useAutomationExtension', False)
-chrome_options.add_argument("--disable-notifications")
-
-web = webdriver.Chrome(executable_path='chrome/chromedriver', options=chrome_options)
-
-web.get("https://www.reddit.com/"+"r/memes"+"/")
-
-time.sleep(1)
-subject = web.find_element_by_class_name("_3Oa0THmZ3f5iZXAQ0hBJ0k")
-subject.click()
-
-url = web.current_url
-
-web.get('https://viddit.red/')
-
-download = web.find_element_by_xpath("/html/body/section[1]/div/div[1]/div/form/div/input")
-download.send_keys(url)
-
-download = web.find_element_by_xpath("/html/body/section[1]/div/div[1]/div/form/div/div/button")
-download.click()
-
-time.sleep(5)
-
-xpath = "/html/body/section[2]/div/div/div[3]/div[1]/div[1]/a"
-download = get.by_xpath(xpath)
-download.click()
-
-#Actions action= new Actions(driver);
-#action.contextClick(Image).build().perform();
-#web.navigate().back()
-
+def reddit(folder,subreddit):  #def reddit_farmer(subreddit, timeframe, number,filepath, ):
+    get = misc.getme(folder)
+    try:
+        get.site("https://www.reddit.com/" + subreddit + "/")
+        url = get.by_xpath("/html/body/div[1]/div/div[2]/div[2]/div/div/div/div[2]/div[3]/div[1]/div[4]/div[3]/div/div/div[2]/div[3]/div/div[2]/div/a").get_attribute('href')
+        get.site(url)
+        get.by_class_name("_3Oa0THmZ3f5iZXAQ0hBJ0k").click()
+        get.web.switch_to.window(get.web.window_handles[1])
+        new_url = get.current_url()
+        print(new_url)
+        filename = new_url.translate({ord(i): None for i in '/:'})
+        misc.download_by_link(url=new_url,filepath=folder,filename=filename)
+    finally:
+        time.sleep(10)
+        get.close()
 
 
