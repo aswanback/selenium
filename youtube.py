@@ -8,7 +8,6 @@ import time
 import re
 import os
 
-
 def get_yt_videos(query, folder, max_length=100,number=0, duration=0):
     use_dur = False
     use_num = False

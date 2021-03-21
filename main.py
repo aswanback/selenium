@@ -88,7 +88,6 @@ if __name__ == "__main__":
         }
     }
 
-
     default_comp_name = s['defaults']['multimedia']
     default_yt_name = s['youtube']['query'].translate({ord(i): '-' for i in '/ '})+'1'
     default_rd_name = s['defaults']['reddit']

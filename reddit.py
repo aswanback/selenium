@@ -1,16 +1,6 @@
-from selenium.webdriver.chrome import options
-from selenium.webdriver.common.keys import Keys
 import time
 import re
-import requests  # to get image from the web
-import shutil  # to save it locally
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium import webdriver
-import random as r
 import os
-from selenium.webdriver.common.action_chains import ActionChains
 from editing import *
 import misc
 
