@@ -27,18 +27,18 @@ def set_dir(name,filename=''):
         full_path = '{}/{}/{}'.format(path, name,filename)
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
-    return full_path # path setu
+    return full_path # path setu # set up # Set up path
 
 if __name__ == "__main__":
     start_time = time.time()
     s = {
         # ------------------------------------------
         'youtube': {
-            'Run_this?': True,
+            'Run_this?': False,
             'query': 'look at all those chickens',
             'folder_name': 'default',
-            'number': 3,                            # set this to 0 to ignore it
-            'duration': 0,                          # total comp duration - set this to 0 to ignore it
+            'number': 3,                                # set this to 0 to ignore it
+            'duration': 0,                              # total comp duration - set this to 0 to ignore it
             'max_length': 40,
         },
         # ------------------------------------------
@@ -56,9 +56,15 @@ if __name__ == "__main__":
         },
         # -------------------------------------------
         'use_same_folder_for_all': False,               # do you want to use the same folder for tiktok, reddit and/or youtube?
-        'folder_name_for_all': 'default',               # won't be used unless the above is True
+        'folder_name_for_all': 'default',               # unused unless above True
         'replace_folders': False,                       # replace your folder every time you run or make a new one?
-        'concat_immediatedly': False,                   # TODO: actually do this. concat all videos in the folder(s) you just downloaded. if different folder, are separate
+        'concat': False,                                # immediately concat all videos in the folder(s) you just downloaded
+        'resolution': {
+            'youtube': '720p',
+            'tiktok': 'tiktok',
+            'reddit': '720p',
+            'multimedia': '720p'
+        },
         # -------------------------------------------
 
         'clean': {
@@ -75,12 +81,18 @@ if __name__ == "__main__":
             'duration': 0,                  # leave as zero to use 'end' timestamp
         },
         'notify?': False,  # get a notification when python has finished?
+        'defaults': {
+             # youtube default is based on query
+            'multimedia': 'multi_source1', # best to leave a 1 at the end of all of these if you change them
+            'tiktok': 'tiktok1',
+            'reddit': 'reddit1',
+        }
     }
 
-    default_comp_name = 'multi_source1'
+    default_comp_name = s['defaults']['multimedia']
     default_yt_name = s['youtube']['query'].translate({ord(i): '-' for i in '/ '})+'1'
-    default_rd_name = 'reddit1'
-    default_tt_name = 'tiktok1'
+    default_rd_name = s['defaults']['reddit']
+    default_tt_name = s['defaults']['tiktok']
     # figure out what to call the folder if it's all in same folder
     if s['use_same_folder_for_all']:
         if s['folder_name_for_all'] == 'default':
@@ -138,6 +150,20 @@ if __name__ == "__main__":
         reddit_dir = set_dir(rd_name)
         reddit(reddit_dir,s['reddit']['subreddit'])
 
+    # Concat videos
+    if(s['concat']):
+        if s['use_same_folder_for_all']:
+            concat(set_dir(yt_name),resolution=s['resolution']['multimedia'])
+        else:
+            if s['youtube']['Run_this?']:
+                concat(youtube_dir, resolution=s['resolution']['youtube'])
+
+            if s['tiktok']['Run_this?']:
+                concat(tiktok_dir,resolution=s['resolution']['tiktok'])
+
+            if s['reddit']['Run_this?']:
+                concat(reddit_dir, resolution=s['resolution']['reddit'])
+
     # Clean folder
     if s['clean']['Run_this?']:
         misc.clean(path + '/' + s['clean']['/path/to/folder'], hard=s['clean']['hard?'])
@@ -146,10 +172,9 @@ if __name__ == "__main__":
     if s['trim']['Run_this?']:
         trim_file(s['trim']['folder_of_video']+s['trim']['video_name_to_trim'],start=s['trim']['start'],end=s['trim']['end'],dur=s['trim']['dur'])
 
-
     # Show run time, notify if wanted
     print(f'Execution time - {datetime.timedelta(seconds=round(time.time() - start_time))}')
     if s['notify?']:
-        notify('Selenium','','Process finished') # Code that interprets the dictionary and runs everything based on it
+        notify('Selenium','','Process finished') # Long aids code to run everything and version solve the folders
 
 
