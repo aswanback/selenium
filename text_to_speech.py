@@ -36,7 +36,6 @@ engine.save_to_file('Hello World', 'test.mp3')
 engine.runAndWait()
 
 '''
-engine = pyttsx3.init()
 import pyttsx3
 engine = pyttsx3.init()
 v = list(engine.getProperty('voices'))
@@ -44,7 +43,7 @@ eng_v = [v[0],v[7],v[10],v[11],v[17],v[28], v[32],v[33],v[37],v[40],v[41]]
 print(len(eng_v))
 for voice in eng_v:
     engine.setProperty('voice', voice.id)
-    engine.say("The houthi creature only desires sleep food and sex: in that order")
+    engine.say("Lactation is sexually arousing")
 engine.runAndWait()
 
 

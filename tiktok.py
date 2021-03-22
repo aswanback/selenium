@@ -184,5 +184,5 @@ def tik_tok_farmer(folder, number):
         #web.close()
 
 
-tik_tok_farmer("/Users/andrewswanback/documents/sd", 10)
+tik_tok_farmer("/Users/Calebstevens/documents/Selenium_data/tiktok", 10)
 #concat("/users/calebstevens/documents/Selenium_data/tiktok",resolution='tiktok')
