@@ -12,23 +12,34 @@ import shutil
 
 def clear(folder):
     os.system('rm {}/*'.format(folder))
-
 def clean(folder,hard=False):
     if hard == True:
-        remove_list = [name for name in os.listdir(folder) if ('.txt' or '.DS_Store' or 'comp.mp4') not in name]
+        remove_list = [name for name in os.listdir(folder) if ('.txt' or '.DS_Store' or 'comp.mp4' or 'final.mp4') not in name]
     else:
-        remove_list = [name for name in os.listdir(folder) if ('.txt' or '-e.mp4' or '.DS_Store' or 'comp.mp4')not in name]
+        remove_list = [name for name in os.listdir(folder) if ('.txt' or '-e.mp4' or '.DS_Store' or 'comp.mp4' or 'final.mp4')not in name]
     for i in remove_list:
         os.system('rm {}'.format(folder+'/'+i))
-
 def folder_duration(folder):
     total = 0
     for i in os.listdir(folder):
         total += editing.get_length(i)
     return total
-
-def download_video_by_link(url,filepath,filename):
-    urllib.request.urlretrieve(url, '{}/{}.mp4'.format(filepath,filename))
+def batch_rename(folder,active):
+    if active:
+        file = [f for f in os.listdir(folder) if f != 'archive.txt']
+        i = 1
+        newfile = 'video1.mp4'
+        while newfile in os.listdir(folder):
+            newfile = f'video{i}.mp4'
+            i+=1
+        os.rename(folder+'/'+file, folder+'/'+newfile)
+        time.sleep(0.1)
+    else:
+        file = [f for f in os.listdir(folder) if f != 'archive.txt']
+        for f in file:
+            new1 = f.replace(' ','-')
+            newfile = new1[11:]
+            os.rename(folder + '/' + f, folder+'/'+newfile)
 
 def download_by_link(url, filepath, filename):
     r = requests.get(url, stream=True) # Open the url image, set stream to True, this will return the stream content.
@@ -38,34 +49,31 @@ def download_by_link(url, filepath, filename):
             shutil.copyfileobj(r.raw, f)
     else:
         print('{} couldn\'t be retrieved'.format(filename))
-
 def wait_until_download_complete(folder,timeout=20):
     still_working = True
-    elapsed = 0
+    elapsed = 0.0
     time.sleep(0.1)
     while still_working and elapsed<timeout:
         while(len(os.listdir(folder)) == 0):
             time.sleep(0.2)
-            print("empty")
+            #print("empty")
         still_working = False
         for filename in os.listdir(folder):
-            if filename.endswith('.crdownload'):
+            if '.crdownload' in filename:
                 print(f"doing some shit {filename}")
                 still_working = True
         time.sleep(0.2)
         elapsed += 0.2
-
 def latest_download_file(path):
     os.chdir(path)
     files = sorted(os.listdir(os.getcwd()), key=os.path.getmtime)
     newest = files[-1]
     return newest
-
 def wait_download_complete(filepath):
     fileends = "crdownload"
     while "crdownload" == fileends:
         time.sleep(0.4)
-        newest_file = editing.latest_download_file(filepath)
+        newest_file = latest_download_file(filepath)
         if "crdownload" in newest_file:
             fileends = "crdownload"
         else:
@@ -113,13 +121,61 @@ class getme:
         link_text = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD="link_text")
         self._method_var = x
         return link_text.element
-    def site(self, site):
+    def by_css_selector(self,x):
+        css = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD="css")
+        self._method_var = x
+        return css.element
+
+    def site(self,url):
+        self.web.get(url)
+        '''if first_site:
+            starting_url = self.web.current_url
+        else:
+            starting_url = '0'
+        self.web.get(url)
         time.sleep(0.2)
-        self.web.get(site)
+        elapsed = 0.0
+        while self.web.current_url == starting_url:
+            time.sleep(0.2)
+            elapsed += 0.2
+            if elapsed > 4 and elapsed.is_integer():
+                print(f'Stalled for {elapsed}')
+            if elapsed >= 20:
+                print(f'Timeout in get.site({url}')'''
+    def wait_until_move_from(self,url):
+        elapsed = 0.0
+        while self.web.current_url == url:
+            time.sleep(0.2)
+            elapsed += 0.2
+            if elapsed > 4 and elapsed.is_integer():
+                print(f'Stalled for {elapsed}')
+            if elapsed >= 20:
+                print(f'Timeout in get.site({url}')
     def current_url(self):
         return self.web.current_url
+    def back(self):
+        self.web.execute_script("window.history.go(-1)")
     def close(self):
         self.web.close()
+
+    def archive(self,url):
+        archive = open(self.folder + '/archive.txt', 'a')
+        archive.write(url + '\n')
+        archive.close()
+    def master_archive(self,url):
+        video_title = self.by_css_selector('h1.title yt-formatted-string').text
+        master_archive = open('master_archive.txt', 'a')
+        master_archive.write(url + ' ' + video_title + '\n')
+        master_archive.close()
+
+    def yt_duration(self):
+        length_of_video = self.by_class_name('ytp-time-duration').text
+        match = re.findall(r'(\d+):(\d+)', length_of_video)
+        while len(match) == 0:
+            length_of_vid = self.by_class_name('ytp-time-duration').text
+            match = re.findall(r'(\d+):(\d+)', length_of_vid)
+        time_secs = int(match[0][0]) * 60 + int(match[0][1])
+        return time_secs
 
 class by_var(object):
     element = 12
@@ -134,8 +190,12 @@ class by_var(object):
             self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.XPATH, _method_var)),message="Couldn't get by xpath")
         if METHOD == "link_text":
             self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.LINK_TEXT, _method_var)),message="Couldn't get by link text")
+        if METHOD == "css":
+            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.CSS_SELECTOR, _method_var)),message="Couldn't get by css selector")
     def click(self):
-        print(self.element)
+        #print(self.element)
         self.element.click()
     def send_keys(self,keys):
         self.element.send_keys(keys)
+    def text(self):
+        return self.element.text

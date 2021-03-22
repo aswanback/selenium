@@ -33,11 +33,11 @@ if __name__ == "__main__":
     s = {
         # ------------------------------------------
         'youtube': {
-            'Run_this?': False,
-            'query': 'look at all those chickens',
+            'Run_this?': True,
+            'query': 'it do go down',
             'folder_name': 'default',
-            'number': 3,                                # set this to 0 to ignore it
-            'duration': 0,                              # total comp duration - set this to 0 to ignore it
+            'number': 0,                                    # set this to 0 to ignore it
+            'duration': 2*60,                               # total comp duration - set this to 0 to ignore it
             'max_length': 40,
         },
         # ------------------------------------------
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         },
         # -------------------------------------------
         'reddit': {
-            'Run_this?': True,
+            'Run_this?': False,
             'folder_name': 'default',
             'subreddit': 'r/memes',
             'num_imgs': 20,
@@ -82,14 +82,14 @@ if __name__ == "__main__":
         'notify?': False,  # get a notification when python has finished?
         'defaults': {
              # youtube default is based on query
-            'multimedia': 'multi_source1', # best to leave a 1 at the end of all of these if you change them
-            'tiktok': 'tiktok1',
-            'reddit': 'reddit1',
+            'multimedia': 'multi_source', # best to leave a 1 at the end of all of these if you change them
+            'tiktok': 'tiktok',
+            'reddit': 'reddit',
         }
     }
 
     default_comp_name = s['defaults']['multimedia']
-    default_yt_name = s['youtube']['query'].translate({ord(i): '-' for i in '/ '})+'1'
+    default_yt_name = s['youtube']['query'].translate({ord(i): '-' for i in '/ '})
     default_rd_name = s['defaults']['reddit']
     default_tt_name = s['defaults']['tiktok']
     # figure out what to call the folder if it's all in same folder
@@ -97,44 +97,43 @@ if __name__ == "__main__":
         if s['folder_name_for_all'] == 'default':
             comp_i = 1
             if not s['replace_folders']:
-                while default_comp_name[:-len(str(comp_i-1))] + f'{comp_i}' in os.listdir(path): comp_i += 1
-            name = default_comp_name[0:-1] + f'{comp_i}'
+                while default_comp_name + f'{comp_i}' in os.listdir(path): comp_i += 1
+            name = default_comp_name + f'{comp_i}'
 
         else:
             default_name = s['folder_name_for_all']
             comp_i = 1
             if not s['replace_folders']:
-                while default_name[:-len(str(comp_i - 1))] + f'{comp_i}' in os.listdir(path): comp_i += 1
-            name = default_name[0:-1] + f'{comp_i}'
+                while default_name + f'{comp_i}' in os.listdir(path): comp_i += 1
+            name = default_name + f'{comp_i}'
 
         yt_name = name
         tt_name = name
         rd_name = name
     # figure out what to call it if all in different folders
     else:
-        yt_name = default_yt_name[0:-1]
+        yt_name = default_yt_name
         yt_i = 1
         if not s['replace_folders']:
-            while default_yt_name[0:-len(str(yt_i-1))] + f'{yt_i}' in os.listdir(path): yt_i += 1
-            yt_name = default_yt_name[0:-1] + f'{yt_i}'
+            while default_yt_name+ f'{yt_i}' in os.listdir(path): yt_i += 1
+            yt_name = default_yt_name + f'{yt_i}'
         if s['youtube']['folder_name'] != 'default':
             yt_name = s['youtube']['folder_name']
 
-        tt_name = default_yt_name[0:-1]
+        tt_name = default_tt_name
         tt_i = 1
         if not s['replace_folders']:
-            while default_tt_name[0:-len(str(tt_i-1))] + f'{tt_i}' in os.listdir(path):
-                tt_i += 1
-            tt_name = default_tt_name[0:-len(str(tt_i-1))] + f'{tt_i}'
+            while default_tt_name + f'{tt_i}' in os.listdir(path): tt_i += 1
+            tt_name = default_tt_name + f'{tt_i}'
         if s['tiktok']['folder_name'] != 'default':
             tt_name = s['tiktok']['folder_name']
 
-        rd_name = default_yt_name[0:-1]
+        rd_name = default_yt_name
         rd_i = 1
         if not s['replace_folders']:
-            while default_rd_name[0:-len(str(rd_i-1))] + f'{rd_i}' in os.listdir(path):
+            while default_rd_name + f'{rd_i}' in os.listdir(path):
                 rd_i += 1
-            rd_name = default_rd_name[0:-len(str(rd_i-1))] + f'{rd_i}'
+            rd_name = default_rd_name + f'{rd_i}'
         if s['reddit']['folder_name'] != 'default':
             rd_name = s['reddit']['folder_name']
 
