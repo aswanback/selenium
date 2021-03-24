@@ -15,6 +15,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from editing import *
 import misc
 
+
+
 def reddit(folder,subreddit):  #def reddit_farmer(subreddit, timeframe, number,filepath, ):
     get = misc.getme(folder)
     try:
