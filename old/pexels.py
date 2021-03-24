@@ -4,7 +4,7 @@ from youtube import *
 
 
 def get_pexel_photos(query, filepath):
-    web = webdriver.Chrome('chrome/chromedriver')
+    web = webdriver.Chrome('../chrome/chromedriver')
     web.get('http://www.pexels.com/search/{}'.format(query))
     elements = web.find_elements_by_class_name('photo-item__img')
     links = []
@@ -23,7 +23,7 @@ def get_pexel_photos(query, filepath):
 
 def get_pexel_videos(query,filepath):
     listfile = open(filepath + '/listfile.txt', "w")
-    web = webdriver.Chrome('chrome/chromedriver')
+    web = webdriver.Chrome('../chrome/chromedriver')
     web.get('http://www.pexels.com/search/videos/{}'.format(query))
     elements = web.find_elements_by_class_name('photo-item__video')
     links = []
