@@ -90,6 +90,7 @@ class getme:
     def __init__(self,folder,incognito=False,headless=False,mute=False):
         chrome_options = webdriver.ChromeOptions()
         prefs = {'download.default_directory': folder}
+        chrome_options.add_argument("--disable-notifications")
         chrome_options.add_experimental_option('prefs', prefs)
         if(incognito):
             chrome_options.add_argument("--incognito")
