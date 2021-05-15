@@ -8,6 +8,7 @@ import re
 import os
 import random
 import misc
+from main import path
 
 def get_yt_videos(query, folder, max_length=100,number=0, duration=0,batch_rename=True):
     use_dur = False
@@ -20,7 +21,7 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0,batch_renam
     num_vids = 0  # Set up number, dur
 
     get = misc.getme(folder,mute=True)
-    get.site("https://www.youtube.com/results?search_query=" + str(query))
+    get.site("https://www.youtube.com/results?search_query=" + query)
     starting_url = get.current_url()
     get.by_xpath('//*[@id="video-title"]').click()
     get.wait_until_move_from(starting_url)
@@ -33,6 +34,7 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0,batch_renam
         url_list = []  # archive.txt
 
     try:
+        video_too_long_count = 0
         while True:
             current_url = get.current_url()
             time.sleep(0.2)
@@ -46,6 +48,11 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0,batch_renam
             # Go back, this video is too long
             if current_url not in url_list and time_secs > max_length:
                 print('video too long, getting alternate...')
+                video_too_long_count += 1
+                if(video_too_long_count > 4):       # go back twice
+                    print('Going back another video')
+                    video_too_long_count = 0
+                    get.back()
                 time.sleep(0.2)
                 get.back() # go back
                 if get.current_url() == starting_url:                   # catch ad on first page exception
@@ -62,6 +69,7 @@ def get_yt_videos(query, folder, max_length=100,number=0, duration=0,batch_renam
 
             # Get this video
             if current_url not in url_list and time_secs < max_length:
+                video_too_long_count = 0
                 if get.current_url() == starting_url:                   # catch ad on first page exception
                     get.by_xpath('//*[@id="video-title"]').click()
                     get.wait_until_move_from(starting_url)

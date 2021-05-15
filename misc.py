@@ -9,6 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import requests
 import shutil
+from main import path
 
 def clear(folder):
     os.system('rm {}/*'.format(folder))
@@ -26,14 +27,15 @@ def folder_duration(folder):
     return total
 def batch_rename(folder,active):
     if active:
-        file = [f for f in os.listdir(folder) if f != 'archive.txt']
-        i = 1
-        newfile = 'video1.mp4'
-        while newfile in os.listdir(folder):
-            newfile = f'video{i}.mp4'
-            i+=1
-        os.rename(folder+'/'+file, folder+'/'+newfile)
-        time.sleep(0.1)
+        files = [f for f in os.listdir(folder) if f != 'archive.txt']
+        for filename in files:
+            i = 1
+            newfile = 'video1.mp4'
+            while newfile in os.listdir(folder):
+                newfile = f'video{i}.mp4'
+                i+=1
+            os.rename(folder+'/'+filename, folder+'/'+newfile)
+            time.sleep(0.1)
     else:
         file = [f for f in os.listdir(folder) if f != 'archive.txt']
         for f in file:
@@ -56,11 +58,9 @@ def wait_until_download_complete(folder,timeout=20):
     while still_working and elapsed<timeout:
         while(len(os.listdir(folder)) == 0):
             time.sleep(0.2)
-            #print("empty")
         still_working = False
         for filename in os.listdir(folder):
             if '.crdownload' in filename:
-                print(f"doing some shit {filename}")
                 still_working = True
         time.sleep(0.2)
         elapsed += 0.2
@@ -164,8 +164,10 @@ class getme:
         archive.close()
     def master_archive(self,url):
         video_title = self.by_css_selector('h1.title yt-formatted-string').text
-        master_archive = open('master_archive.txt', 'a')
-        master_archive.write(url + ' ' + video_title + '\n')
+        master_archive = open(path+'/'+'master_archive.txt', 'r+')
+        url_list = master_archive.readlines()
+        if (url + ' ' + video_title + '\n') not in url_list:
+            master_archive.write(url + ' ' + video_title + '\n')
         master_archive.close()
 
     def yt_duration(self):

@@ -8,7 +8,7 @@ name = 'andrew'
 #name = 'caleb'
 path_dict = {
     'andrew': '/Users/andrewswanback/Documents/sd/content',
-    'caleb': '/Users/calebstevens/Documents/selenium_data'
+    'caleb': '/Users/calebstevens/Documents/selenium_data',
 }
 path = path_dict[name]
 def set_dir(foldername,filename=''):
@@ -30,14 +30,19 @@ def set_dir(foldername,filename=''):
 
 if __name__ == "__main__":
     start_time = time.time()
+
     s = {
         # ------------------------------------------
+        'concat': False,                                # concat all videos in the folder(s) you just downloaded,
+        'folder_to_concat': 'can-you-tell-the-time?3',                       # unless 'folder_to_concat' is not None, then it'll do that folder
+        'chosen_resolution': '720p',                    # choices are '720p', '1080p' and 'tiktok'
+        # ------------------------------------------
         'youtube': {
-            'Run_this?': True,
-            'query': 'it do go down',
+            'Run_this?': False,
+            'query': '\"that quiet Kid in the class-\"',
             'folder_name': 'default',
             'number': 0,                                    # set this to 0 to ignore it
-            'duration': 2*60,                               # total comp duration - set this to 0 to ignore it
+            'duration': 5*60,                               # total comp duration - set this to 0 to ignore it
             'max_length': 40,
         },
         # ------------------------------------------
@@ -48,7 +53,7 @@ if __name__ == "__main__":
         },
         # -------------------------------------------
         'reddit': {
-            'Run_this?': False,
+            'Run_this?': True,
             'folder_name': 'default',
             'subreddit': 'r/memes',
             'num_imgs': 20,
@@ -57,7 +62,7 @@ if __name__ == "__main__":
         'use_same_folder_for_all': False,               # do you want to use the same folder for tiktok, reddit and/or youtube?
         'folder_name_for_all': 'default',               # unused unless above True
         'replace_folders': False,                       # replace your folder every time you run or make a new one?
-        'concat': False,                                # immediately concat all videos in the folder(s) you just downloaded
+
         'resolution': {
             'youtube': '720p',
             'tiktok': 'tiktok',
@@ -82,7 +87,7 @@ if __name__ == "__main__":
         'notify?': False,  # get a notification when python has finished?
         'defaults': {
              # youtube default is based on query
-            'multimedia': 'multi_source', # best to leave a 1 at the end of all of these if you change them
+            'multimedia': 'multi_source',
             'tiktok': 'tiktok',
             'reddit': 'reddit',
         }
@@ -153,17 +158,20 @@ if __name__ == "__main__":
 
     # Concat videos
     if s['concat']:
-        if s['use_same_folder_for_all']:
-            concat(set_dir(yt_name),resolution=s['resolution']['multimedia'])
+        if s['folder_to_concat'] is None:
+            if s['use_same_folder_for_all']:
+                concat(set_dir(yt_name),resolution=s['resolution']['multimedia'])
+            else:
+                if s['youtube']['Run_this?']:
+                    concat(youtube_dir, resolution=s['resolution']['youtube'])
+
+                if s['tiktok']['Run_this?']:
+                    concat(tiktok_dir,resolution=s['resolution']['tiktok'])
+
+                if s['reddit']['Run_this?']:
+                    concat(reddit_dir, resolution=s['resolution']['reddit'])
         else:
-            if s['youtube']['Run_this?']:
-                concat(youtube_dir, resolution=s['resolution']['youtube'])
-
-            if s['tiktok']['Run_this?']:
-                concat(tiktok_dir,resolution=s['resolution']['tiktok'])
-
-            if s['reddit']['Run_this?']:
-                concat(reddit_dir, resolution=s['resolution']['reddit'])
+            concat(set_dir(s['folder_to_concat']), resolution=s['chosen_resolution'])
 
     # Clean folder
     if s['clean']['Run_this?']:
