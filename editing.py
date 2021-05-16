@@ -1,20 +1,19 @@
-from misc import *
-from youtube import *
 import subprocess
 import os
-import main
+import re
+import misc
 
 def concat(folder,resolution='720p'):
     if resolution == '1080p':
         w = 1920
         h = 1080
         intro_path = ''  # main.set_dir('' + 'intro.mp4')
-        outro_path = main.set_dir('' + f'outro{h}.mp4')
+        outro_path = misc.set_dir('' + f'outro{h}.mp4')
     elif resolution == '720p':
         w = 1280
         h = 720
         intro_path = ''  # main.set_dir('' + 'intro.mp4')
-        outro_path = main.set_dir('' + f'outro{h}.mp4')
+        outro_path = misc.set_dir('' + f'outro{h}.mp4')
     elif resolution == 'tiktok':
         w = 576
         h = 1024

@@ -1,7 +1,8 @@
 import urllib.request
-from old.pexels import *
 import os
-import editing
+import re
+import subprocess
+from editing import get_length
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -9,7 +10,34 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import requests
 import shutil
-from main import path
+
+username = str(subprocess.check_output('whoami'))
+name = None
+if 'andrewswanback' in username:
+    name = 'andrew'
+elif 'calebstevens' in username:
+    name = 'caleb'
+path_dict = {
+    'andrew': '/Users/andrewswanback/Documents/sd/content',
+    'caleb': '/Users/calebstevens/Documents/selenium_data',
+}
+path = path_dict[name]
+def set_dir(foldername,filename=''):
+    if foldername == '':
+        if filename != '':
+            return path+'/'+filename
+        else:
+            return path
+    if filename == '':
+        full_path = '{}/{}'.format(path, foldername)
+        if not os.path.exists(full_path):
+            os.mkdir(full_path)
+    else:
+        dir_path = '{}/{}'.format(path, foldername)
+        full_path = '{}/{}/{}'.format(path, foldername,filename)
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)
+    return full_path # path setu # set up # Set up path
 
 def clear(folder):
     os.system('rm {}/*'.format(folder))
@@ -23,25 +51,25 @@ def clean(folder,hard=False):
 def folder_duration(folder):
     total = 0
     for i in os.listdir(folder):
-        total += editing.get_length(i)
+        total += get_length(i)
     return total
-def batch_rename(folder,active):
-    if active:
-        files = [f for f in os.listdir(folder) if f != 'archive.txt']
-        for filename in files:
-            i = 1
-            newfile = 'video1.mp4'
-            while newfile in os.listdir(folder):
-                newfile = f'video{i}.mp4'
-                i+=1
-            os.rename(folder+'/'+filename, folder+'/'+newfile)
-            time.sleep(0.1)
-    else:
-        file = [f for f in os.listdir(folder) if f != 'archive.txt']
-        for f in file:
-            new1 = f.replace(' ','-')
-            newfile = new1[11:]
-            os.rename(folder + '/' + f, folder+'/'+newfile)
+def batch_rename(folder):
+    #if active:
+    files = [f for f in os.listdir(folder) if f != 'archive.txt']
+    for filename in files:
+        i = 1
+        newfile = 'video1.mp4'
+        while newfile in os.listdir(folder):
+            newfile = f'video{i}.mp4'
+            i+=1
+        os.rename(folder+'/'+filename, folder+'/'+newfile)
+        time.sleep(0.1)
+    #else:
+    #    file = [f for f in os.listdir(folder) if f != 'archive.txt']
+    #    for f in file:
+    #        new1 = f.replace(' ','-')
+    #        newfile = new1[11:]
+    #        os.rename(folder + '/' + f, folder+'/'+newfile)
 
 def download_by_link(url, filepath, filename):
     r = requests.get(url, stream=True) # Open the url image, set stream to True, this will return the stream content.
@@ -86,11 +114,12 @@ def notify(title, subtitle, message):
     os.system('terminal-notifier {}'.format(' '.join([m, t, s])))
 
 class getme:
-    timeout = 20
+    timeout = 6
     def __init__(self,folder,incognito=False,headless=False,mute=False):
         chrome_options = webdriver.ChromeOptions()
         prefs = {'download.default_directory': folder}
         chrome_options.add_experimental_option('prefs', prefs)
+        chrome_options.add_argument('--disable-notifications')
         if(incognito):
             chrome_options.add_argument("--incognito")
         if(mute):
@@ -113,6 +142,10 @@ class getme:
         class_name = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD='class_name')
         self._method_var = x
         return class_name.element
+    def by_class_names(self,x):
+        class_name = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD='class_name',multiple=True)
+        self._method_var = x
+        return class_name.element
     def by_xpath(self,x):
         xpath = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD='xpath')
         self._method_var = x
@@ -125,6 +158,11 @@ class getme:
         css = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD="css")
         self._method_var = x
         return css.element
+    def by_css_selectors(self,x):
+        css = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD="css",multiple=True)
+        self._method_var = x
+        return css.element
+
 
     def site(self,url):
         self.web.get(url)
@@ -181,19 +219,34 @@ class getme:
 
 class by_var(object):
     element = 12
-    def __init__(self, web2, _method_var, timeout,METHOD):
-        if METHOD == "id":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.ID, _method_var)),message="Couldn't get by id")
-        if METHOD == "name":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.NAME, _method_var)),message="Couldn't get by name")
-        if METHOD == "class_name":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.CLASS_NAME, _method_var)),message="Couldn't get by class name")
-        if METHOD == "xpath":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.XPATH, _method_var)),message="Couldn't get by xpath")
-        if METHOD == "link_text":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.LINK_TEXT, _method_var)),message="Couldn't get by link text")
-        if METHOD == "css":
-            self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.CSS_SELECTOR, _method_var)),message="Couldn't get by css selector")
+    def __init__(self, web2, _method_var, timeout,METHOD,multiple=False):
+        if not multiple:
+            if METHOD == "id":
+                self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.ID, _method_var)),message="Couldn't get by id")
+            if METHOD == "name":
+                self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.NAME, _method_var)),message="Couldn't get by name")
+            if METHOD == "class_name":
+                self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.CLASS_NAME, _method_var)),message="Couldn't get by class name")
+            if METHOD == "xpath":
+                self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.XPATH, _method_var)),message="Couldn't get by xpath")
+            if METHOD == "link_text":
+                self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.LINK_TEXT, _method_var)),message="Couldn't get by link text")
+            if METHOD == "css":
+                self.element = WebDriverWait(web2, timeout).until(EC.presence_of_element_located((By.CSS_SELECTOR, _method_var)),message="Couldn't get by css selector")
+        if multiple:
+            if METHOD == "id":
+                self.element = WebDriverWait(web2, timeout).until(EC.presence_of_all_elements_located((By.ID, _method_var)),message="Couldn't get by id")
+            if METHOD == "name":
+                self.element = WebDriverWait(web2, timeout).until(EC.presence_of_all_elements_located((By.NAME, _method_var)),message="Couldn't get by name")
+            if METHOD == "class_name":
+                self.element = WebDriverWait(web2, timeout).until(EC.presence_of_all_elements_located((By.CLASS_NAME, _method_var)),message="Couldn't get by class name")
+            if METHOD == "xpath":
+                self.element = WebDriverWait(web2, timeout).until(EC.presence_of_all_elements_located((By.XPATH, _method_var)),message="Couldn't get by xpath")
+            if METHOD == "link_text":
+                self.element = WebDriverWait(web2, timeout).until(EC.presence_of_all_elements_located((By.LINK_TEXT, _method_var)),message="Couldn't get by link text")
+            if METHOD == "css":
+                self.element = WebDriverWait(web2, timeout).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, _method_var)),message="Couldn't get by css selector")
+
     def click(self):
         #print(self.element)
         self.element.click()
