@@ -91,6 +91,9 @@ class getme:
         chrome_options = webdriver.ChromeOptions()
         prefs = {'download.default_directory': folder}
         chrome_options.add_argument("--disable-notifications")
+        chrome_options.add_argument("--disable-web-security")
+        chrome_options.add_argument("--allow-running-insecure-content")
+
         chrome_options.add_experimental_option('prefs', prefs)
         if(incognito):
             chrome_options.add_argument("--incognito")

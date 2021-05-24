@@ -29,7 +29,7 @@ def download_img_by_link(image_url, filepath, filename):
 #def download_filter_youtube_music(filepath,filename,num_tracks=1,mood='', genre='', track_title='', duration=''):
 
 if __name__ == "__main__":
-    web2 = webdriver.Chrome('chrome/chromedriver')
+    web2 = webdriver.Chrome('chrome/delete_me')
     web2.get('http://www.pexels.com/');
     search = web2.find_element_by_xpath('/html/body/header/section/div/form/div[1]/input')
     search.send_keys("wave")

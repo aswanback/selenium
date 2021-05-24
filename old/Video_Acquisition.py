@@ -61,7 +61,7 @@ def get_yt_audios(filepath):    #TODO: Add filters
     chrome_options = webdriver.ChromeOptions()
     prefs = {'download.default_directory': '{}'.format(filepath)}
     chrome_options.add_experimental_option('prefs', prefs)
-    web = webdriver.Chrome(options=chrome_options, executable_path='chrome/chromedriver')
+    web = webdriver.Chrome(options=chrome_options, executable_path='chrome/delete_me')
     #wait = WebDriverWait(web, 15)
     web.get('https://www.youtube.com/audiolibrary')
 
@@ -100,7 +100,7 @@ def yt_repost_downloader(query, folder, number=0, view_cutoff=0):
     chrome_options = webdriver.ChromeOptions()
     prefs = {'download.default_directory': folder}
     chrome_options.add_experimental_option('prefs', prefs)
-    web = webdriver.Chrome(options=chrome_options, executable_path='chrome/chromedriver')
+    web = webdriver.Chrome(options=chrome_options, executable_path='chrome/delete_me')
     web.get("https://www.youtube.com/results?search_query=" + str(query))
     time.sleep(1)
 
@@ -212,7 +212,7 @@ def get_yt_videos_archive_1(query, folder, number=0, duration=0):
     chrome_options.add_argument("--incognito")
     chrome_options.add_argument("--mute-audio")
     #chrome_options.add_argument("--headless")
-    web = webdriver.Chrome(options=chrome_options, executable_path='chrome/chromedriver')
+    web = webdriver.Chrome(options=chrome_options, executable_path='chrome/delete_me')
     web.get("https://www.youtube.com/results?search_query=" + str(query))
     starting_url = web.current_url
     web.find_element_by_xpath('//*[@id="video-title"]').click()
