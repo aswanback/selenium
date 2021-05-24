@@ -1,22 +1,22 @@
 import time
 import os
-from editing import *
-import misc
+from misc import path, getme, set_dir, batch_rename
 
-def tik_tok_farmer(folder, number):
-    get = misc.getme(folder, mute=True)  # optional arguments: mute, headless, incognito, all False by default
+def tik_tok_farmer(number,foldername=None):
+    if foldername is None:
+        fi = 0
+        while f'tiktok' + f'{fi}' in os.listdir(path):
+            fi += 1
+        foldername = f'tiktok' + f'{fi}'
+    folder = set_dir(foldername)
+    get = getme(folder, mute=True)  # optional arguments: mute, headless, incognito, all False by default
+
     try:
-
-        get.site("https://www.tiktok.com/en")
-        time.sleep(3)
-        get.by_xpath("/html/body/div/div/div[1]/div/div[3]/button").click()
-        get.by_xpath("/html/body/div[1]/div/div[1]/div/div[1]/div[2]/div[2]").click()
-
-
-        get.by_xpath("/html/body/div[2]/div/form/fieldset[1]/div[1]/input").send_keys("nrubenstein0405@gmail.com")
-        get.by_xpath("/html/body/div[2]/div/form/fieldset[1]/div[2]/input").send_keys("Nacny123")
-        get.by_xpath("/html/body/div[2]/div/form/fieldset[2]/input[1]").click()
-        get.by_xpath("/html/body/div/div/div[2]/div[1]/div/div[1]/div/div[1]/div[1]/a[2]/h2").click() # click following
+        get.site('https://www.facebook.com/login.php?skip_api_login=1&api_key=1862952583919182&kid_directed_site=0&app_id=1862952583919182&signed_next=1&next=https%3A%2F%2Fwww.facebook.com%2Fv2.9%2Fdialog%2Foauth%2F%3Fclient_id%3D1862952583919182%26response_type%3Dtoken%26redirect_uri%3Dhttps%253A%252F%252Fwww.tiktok.com%252Flogin%252F%26state%3D%257B%2522client_id%2522%253A%25221862952583919182%2522%252C%2522network%2522%253A%2522facebook%2522%252C%2522display%2522%253A%2522popup%2522%252C%2522callback%2522%253A%2522_hellojs_63fpml0k%2522%252C%2522state%2522%253A%2522%2522%252C%2522redirect_uri%2522%253A%2522https%253A%252F%252Fwww.tiktok.com%252Flogin%252F%2522%252C%2522scope%2522%253A%2522basic%2522%257D%26scope%3Dpublic_profile%26auth_type%3Dreauthenticate%26display%3Dpopup%26ret%3Dlogin%26fbapp_pres%3D0%26logger_id%3De330b458-cfb2-495b-9e00-babb25070a77%26tp%3Dunspecified&cancel_url=https%3A%2F%2Fwww.tiktok.com%2Flogin%2F%3Ferror%3Daccess_denied%26error_code%3D200%26error_description%3DPermissions%2Berror%26error_reason%3Duser_denied%26state%3D%257B%2522client_id%2522%253A%25221862952583919182%2522%252C%2522network%2522%253A%2522facebook%2522%252C%2522display%2522%253A%2522popup%2522%252C%2522callback%2522%253A%2522_hellojs_63fpml0k%2522%252C%2522state%2522%253A%2522%2522%252C%2522redirect_uri%2522%253A%2522https%253A%252F%252Fwww.tiktok.com%252Flogin%252F%2522%252C%2522scope%2522%253A%2522basic%2522%257D%23_%3D_&display=popup&locale=en_US&pl_dbl=0')
+        get.by_xpath("/html/body/div/div[2]/div[1]/form/div/div[1]/div/div/input").send_keys("nrubenstein0405@gmail.com") # username
+        get.by_xpath("/html/body/div/div[2]/div[1]/form/div/div[2]/div/div/input").send_keys("nacny123") # password
+        get.by_xpath("/html/body/div/div[2]/div[1]/form/div/div[3]/label[2]").click()  # click login
+        get.by_xpath("/html/body/div[1]/div/div[2]/div[1]/div/div[1]/div/div[1]/div[1]/a[2]").click() # click following
         get.by_class_name("item-video-container").click() # click first video
         time.sleep(0.5)
 
@@ -45,12 +45,10 @@ def tik_tok_farmer(folder, number):
 
             url = get.current_url()
     finally:
-        files = os.listdir(folder)
-        for i in range(len(files)):
-            os.rename(folder+'/'+files[i],folder+'/'+f"video{i}.mp4")
+        batch_rename(folder)
         time.sleep(15)
         get.close()
 
 if __name__ == "__main__":
-    tik_tok_farmer("/Users/calebstevens/documents/Selenium_data/tiktok", 30)
+    tik_tok_farmer("/Users/calebstevens/documents/Selenium_data/tiktok", 10)
     #concat("/users/calebstevens/documents/Selenium_data/tiktok",resolution='tiktok')

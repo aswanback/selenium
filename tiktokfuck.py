@@ -1,6 +1,5 @@
 import time
 import os
-from editing import *
 import misc
 
 def tik_tok_farmer(folder, number):
@@ -14,4 +13,4 @@ def tik_tok_farmer(folder, number):
 
 
 if __name__ == "__main__":
-    tik_tok_farmer("/Users/calebstevens/documents/Selenium_data/tiktok", 30)
+    tik_tok_farmer("/Users/andrewswanback/documents/sd", 30)

@@ -1,4 +1,3 @@
-
 import os
 import time
 from selenium.webdriver.common.keys import Keys
@@ -73,4 +72,4 @@ def reddit(subreddit,number,foldername=None):
         time.sleep(10)
         get.close()
 
-#reddit("r/memes", 10,'/users/calebstevens/documents/Selenium_data/reddit/', )
+
