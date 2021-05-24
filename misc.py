@@ -163,7 +163,6 @@ class getme:
         self._method_var = x
         return css.element
 
-
     def site(self,url):
         self.web.get(url)
         '''if first_site:
