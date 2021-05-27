@@ -3,17 +3,34 @@ import time
 import reddit as r
 from youtube import get_yt_videos
 from tiktok import tik_tok_farmer
-from misc import get_path, folder_duration,set_dir
+from misc import get_path, folder_duration,set_dir,clean_folder
 from editing import concat
+from distributor import distribute
 
 if __name__ == "__main__":
     path = get_path()
     start_time = time.time()
-    r.reddit('r/holdmyfeedingtube',20,'top',get_images=False)
+    make_sure_r_exists = set_dir('r')
+
+    sub_list = ['r/aww','r/Pigifs','r/cats']
+    percents_list = [50,10,40]
+
+    for sub in sub_list:
+        #r.reddit(foldername=sub, subreddit=sub, number=15, filter='hot', subfilter='all', download_images=False)
+        pass
+
+    dest_folder = set_dir('dist_test2')
+    distribute(dest_folder,5*60,sub_list,percents_list,delete_originals=False)
+    concat(dest_folder)
+
+    #clean_folder(dest_folder,exception_list=['final.mp4','finalr.mp4','zcomp.mp4','zcompr.mp4'])
+
+    #r.reddit('r/holdmyfeedingtube',20,'top',download_images=False)
     #folder = set_dir('r-holdmyfeedingtube-top-all-7/videos')
     #concat(folder,random_dbl=True)
     #get_yt_videos(query='can you tell the time?',duration=5*60,max_length=60)
     #tik_tok_farmer(number=30)
+    #print(f"Duration: {datetime.timedelta(seconds=folder_duration(folder))}") #Print duration of folder
 
     print(f'Execution time - {datetime.timedelta(seconds=round(time.time() - start_time))}')
     #notify('Selenium', '', 'Process finished')

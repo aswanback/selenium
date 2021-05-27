@@ -23,34 +23,69 @@ def get_path():
         'caleb': '/Users/calebstevens/Documents/selenium_data',
     }
     return path_dict[name]
-
 def set_dir(foldername,filename=''):
     path = get_path()
-    if foldername == '':
-        if filename != '':
-            return path+'/'+filename
-        else:
-            return path
-    if filename == '':
-        full_path = '{}/{}'.format(path, foldername)
+    if foldername == '' and filename == '':
+        return path
+    elif foldername == '' and filename != '':
+        return path+'/'+filename
+    elif foldername != '' and filename =='':
+        full_path = f'{path}/{foldername}'
         if not os.path.exists(full_path):
             os.mkdir(full_path)
+        return full_path
     else:
-        dir_path = '{}/{}'.format(path, foldername)
-        full_path = '{}/{}/{}'.format(path, foldername,filename)
+        dir_path = f'{path}/{foldername}'
+        full_path = f'{path}/{foldername}/{filename}'
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
-    return full_path # path setu # set up # Set up path
+        return full_path
+
+def folder_namer(base_name,override_name=None,new_folder_every_run=True,base_directory=None):
+    if base_directory is not None:
+        base_directory = '/' + base_directory
+    else:
+        base_directory = ''
+
+    if override_name is not None:
+        return set_dir(override_name)
+
+    if new_folder_every_run is False:
+        return set_dir(base_directory+base_name)
+    else:
+        path = get_path()
+        i = 1
+        while f'{base_name}{i}' in os.listdir(path+base_directory):
+            i += 1
+        return f'{base_name}{i}'
+
+'''
+        if foldername is None:
+            fi = 1
+            while f'{subreddit}-{filter}-{subfilter[4:]}-{fi}' in os.listdir(path+base_directory):
+                fi += 1
+            foldername = f'{subreddit}-{filter}-{subfilter[4:]}-{fi}'
+'''
+
 
 def clear(folder):
     os.system('rm {}/*'.format(folder))
+
+def clean_folder(folder,exception_list=None):
+    if exception_list is not None:
+        rm_list = [i for i in os.listdir(folder) if i not in exception_list]
+    else:
+        rm_list = [i for i in os.listdir(folder)]
+    for file in rm_list:
+        os.system(f'rm -f {folder}/{file}')
+
 def clean(folder,hard=False):
     if hard == True:
         remove_list = [name for name in os.listdir(folder) if ('.txt' or '.DS_Store' or 'comp.mp4' or 'final.mp4') not in name]
     else:
-        remove_list = [name for name in os.listdir(folder) if ('.txt' or '-e.mp4' or '.DS_Store' or 'comp.mp4' or 'final.mp4')not in name]
+        remove_list = [name for name in os.listdir(folder) if ('.txt' or '-e.mp4' or '.DS_Store' or 'comp.mp4' or 'final.mp4') not in name]
     for i in remove_list:
-        os.system('rm {}'.format(folder+'/'+i))
+        os.system('rm -f {}'.format(folder+'/'+i))
 def folder_duration(folder):
     total = 0
     for i in os.listdir(folder):
