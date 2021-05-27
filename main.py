@@ -3,12 +3,16 @@ import time
 import reddit as r
 from youtube import get_yt_videos
 from tiktok import tik_tok_farmer
+from misc import get_path, folder_duration,set_dir
+from editing import concat
 
 if __name__ == "__main__":
+    path = get_path()
     start_time = time.time()
-
-    #r.reddit('r/memes',50)
-    get_yt_videos(query='can you tell the time?',duration=5*60,max_length=60)
+    r.reddit('r/holdmyfeedingtube',20,'top',get_images=False)
+    #folder = set_dir('r-holdmyfeedingtube-top-all-7/videos')
+    #concat(folder,random_dbl=True)
+    #get_yt_videos(query='can you tell the time?',duration=5*60,max_length=60)
     #tik_tok_farmer(number=30)
 
     print(f'Execution time - {datetime.timedelta(seconds=round(time.time() - start_time))}')

@@ -11,18 +11,21 @@ from selenium.webdriver.support import expected_conditions as EC
 import requests
 import shutil
 
-username = str(subprocess.check_output('whoami'))
-name = None
-if 'andrewswanback' in username:
-    name = 'andrew'
-elif 'calebstevens' in username:
-    name = 'caleb'
-path_dict = {
-    'andrew': '/Users/andrewswanback/Documents/sd/content',
-    'caleb': '/Users/calebstevens/Documents/selenium_data',
-}
-path = path_dict[name]
+def get_path():
+    username = str(subprocess.check_output('whoami'))
+    name = None
+    if 'andrewswanback' in username:
+        name = 'andrew'
+    elif 'calebstevens' in username:
+        name = 'caleb'
+    path_dict = {
+        'andrew': '/Users/andrewswanback/Documents/sd/content',
+        'caleb': '/Users/calebstevens/Documents/selenium_data',
+    }
+    return path_dict[name]
+
 def set_dir(foldername,filename=''):
+    path = get_path()
     if foldername == '':
         if filename != '':
             return path+'/'+filename
@@ -51,7 +54,8 @@ def clean(folder,hard=False):
 def folder_duration(folder):
     total = 0
     for i in os.listdir(folder):
-        total += get_length(i)
+        if 'mp4' in i:
+            total += get_length(folder+'/'+i)
     return total
 def batch_rename(folder):
     #if active:
