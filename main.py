@@ -3,12 +3,13 @@ import time
 import reddit as r
 from youtube import get_yt_videos
 from tiktok import tik_tok_farmer
+from misc import path
 
 if __name__ == "__main__":
     start_time = time.time()
 
-    #r.reddit('r/memes',50)
-    get_yt_videos(query='can you tell the time?',duration=5*60,max_length=60)
+    r.reddit('r/memes',50)
+    #get_yt_videos(query='can you tell the time?',duration=5*60,max_length=60)
     #tik_tok_farmer(number=30)
 
     print(f'Execution time - {datetime.timedelta(seconds=round(time.time() - start_time))}')
