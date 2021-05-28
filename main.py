@@ -15,7 +15,7 @@ category_dict = {
     'pain': [['r/publicfreakout', 'r/fightporn', 'r/streetfights',  'r/instantregret', 'r/holdmyfeedingtube','r/holdmyfries'],[10,20,15,20,20,15]],
     'dumb': [['r/instantregret', 'r/holdmyfeedingtube', 'r/publicfreakout', 'r/holdmybeer','r/holdmycosmo', 'r/holdmyfries'],[30,15,10,15,15,15]],
     'animals': [['r/aww', 'r/cats', 'r/Catswhoyell', 'r/AnimalsBeingJerks', 'r/Pigifs', 'r/Eyebleach', 'r/StartledCats', 'r/AnimalsBeingDerps', 'r/chonkers', 'r/tippytaps'],[15, 5, 5, 10, 5, 10, 5, 20, 15, 10]],
-    'satisfaction': [['r/bettereveryloop', 'r/Satsifyingasfuck', 'r/oddlysatisfying', 'r/powerwashingporn', 'r/blackmagicfuckery'],[25,25,30,10, 10]]
+    'satisfaction': [['r/bettereveryloop', 'r/Satsifyingasfuck', 'r/oddlysatisfying', 'r/powerwashingporn', 'r/blackmagicfuckery'],[25,25,30,10, 10]],
     'all': ['r/blackmagicfuckery', 'r/publicfreakout', 'r/fightporn', 'r/streetfights', 'r/contagiouslaughter', 'r/shittymobilegameads', 'r/holdmyfries', 'r/holdmybeer', 'r/watchthingsfly', 'r/unexpected', 'r/memes', 'r/dankmemes', 'r/holdmyfeedingtube', 'r/tiktokcringe', 'r/shitposting', 'r/gayspiderbrothel', 'r/perfectlycutscreams', 'r/abruptchaos', 'r/instantregret', 'r/holdmycosmo', 'r/maybemaybemaybe', 'r/nononoyes', 'r/yesyesyesno']
 }
 
@@ -48,14 +48,8 @@ if __name__ == "__main__":
     ls[4] = ['reddit','best of reddit','reddit compilations','funny reddit']
     tag_analyzer(ls[0], 100,'animal-tag-analysis')
 
-
     #get_videos('all',15,'top', subfilter='all')
    # make_videos('chaos','chaos_comp_test',11*60,outro_path='outro720.mp4', delete_originals=False)
-
-# Analyze Tags
-# Descireoptions
-
-
 
     # sub_list = ['r/aww','r/Pigifs','r/cats']
     # percents_list = [50,10,40]
