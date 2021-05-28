@@ -40,11 +40,12 @@ if __name__ == "__main__":
     start_time = time.time()
     set_dir('r')
 
-    ls = 4*[]
+    ls = 5*[]
     ls[0] = ['Animal', 'cute animals', 'cute animal compilations', 'cats', 'cute cats', 'animal memes']
     ls[1] = ['Oddly Satisfying', 'Satisfaction', 'Satisfying videos']
     ls[2] = ['Memes', 'dank memes', 'meme compilation', 'dank meme compilation']
     ls[3] = ['Dumbest people', 'instant regret','stupid people','stupidest people']
+    ls[4] = ['reddit','best of reddit','reddit compilations','funny reddit']
     tag_analyzer(ls[0], 100,'animal-tag-analysis')
 
 
