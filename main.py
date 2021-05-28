@@ -3,25 +3,28 @@ import time
 import reddit as r
 from youtube import get_yt_videos
 from tiktok import tik_tok_farmer
-from misc import get_path, folder_duration,set_dir,clean_folder
+from misc import get_path, folder_duration,set_dir,clean_folder,getme
 from editing import concat
 from distributor import distribute
+from tags import tag_analyzer
 
 if __name__ == "__main__":
     path = get_path()
     start_time = time.time()
-    make_sure_r_exists = set_dir('r')
+    set_dir('r')
 
-    sub_list = ['r/aww','r/Pigifs','r/cats']
-    percents_list = [50,10,40]
+    tag_analyzer('meme compilations', 100)
 
-    for sub in sub_list:
-        #r.reddit(foldername=sub, subreddit=sub, number=15, filter='hot', subfilter='all', download_images=False)
-        pass
-
-    dest_folder = set_dir('dist_test2')
-    distribute(dest_folder,5*60,sub_list,percents_list,delete_originals=False)
-    concat(dest_folder)
+    # sub_list = ['r/aww','r/Pigifs','r/cats']
+    # percents_list = [50,10,40]
+    #
+    # for sub in sub_list:
+    #     #r.reddit(foldername=sub, subreddit=sub, number=15, filter='hot', subfilter='all', download_images=False)
+    #     pass
+    #
+    # dest_folder = set_dir('dist_test2')
+    # distribute(dest_folder,5*60,sub_list,percents_list,delete_originals=False)
+    # concat(dest_folder)
 
     #clean_folder(dest_folder,exception_list=['final.mp4','finalr.mp4','zcomp.mp4','zcompr.mp4'])
 

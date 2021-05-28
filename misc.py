@@ -154,7 +154,7 @@ def notify(title, subtitle, message):
 
 class getme:
     timeout = 6
-    def __init__(self,folder,incognito=False,headless=False,mute=False):
+    def __init__(self,folder=get_path(),incognito=False,headless=False,mute=False):
         chrome_options = webdriver.ChromeOptions()
         prefs = {'download.default_directory': folder}
         chrome_options.add_experimental_option('prefs', prefs)
@@ -165,6 +165,7 @@ class getme:
             chrome_options.add_argument("--mute-audio")
         if(headless):
             chrome_options.add_argument("--headless")
+            chrome_options.add_argument('window-size=1920x1080')
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option('useAutomationExtension', False)
         chrome_options.add_extension('extension_5_1_0_0.crx')
@@ -172,6 +173,9 @@ class getme:
         self.folder = folder
     def by_id(self,x):
         id = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD='id')
+        return id.element
+    def by_ids(self,x):
+        id = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD='id',multiple=True)
         return id.element
     def by_name(self,x):
         name = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD='name')
