@@ -78,15 +78,15 @@ def reddit(foldername, subreddit, number, filter, subfilter='all', download_imag
                 s = 0
             else:
                 s = ''
-            if 'mp4' in vid:
+            if 'mp4?' in vid:
                 download_by_link(vid, folder, f'video{s}{i}.mp4')
                 print('.',end='')
                 i+=1
-            elif 'm3u8' in vid:
+            elif 'm3u8?' in vid:
                 os.system(f'ffmpeg -y -hide_banner -loglevel error -i "{vid}" {folder}/video{s}{i}.mp4')
                 print('.',end='')
                 i+=1
-            elif '.gif' in vid:
+            elif '.gif?' in vid:
                 download_by_link(vid,folder,f'video{s}{i}.gif')
                 print('.',end='')
                 i+=1

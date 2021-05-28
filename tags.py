@@ -1,11 +1,20 @@
 import re
 from misc import getme, get_path
 import numpy as np
-import matplotlib.pyplot as plt
 import operator
 from tabulate import tabulate
 from selenium.webdriver.common.keys import Keys
 
+def get_vids_for_tags(query,number,mute=True,headless=True):
+    get = getme(mute=mute,headless=headless)
+    get.site("https://www.youtube.com/results?search_query=" + query)
+    links = set()
+    while len(links) < number:
+        elems = get.by_ids('video-title')
+        links.update([elem.get_attribute('href') for elem in elems])
+        get.web.find_element_by_tag_name('body').send_keys(Keys.PAGE_DOWN)
+    get.close()
+    return links
 def get_tags(url_list,mute=True,headless=True):
     get = getme(mute=mute,headless=headless)
     tagmat = []
@@ -69,18 +78,9 @@ def analyze_tags(url_list,tag_filename,mute=True,headless=True):
     print('')
     tag_file.close()
 
-def get_vids_for_tags(query,number,mute=True,headless=True):
-    get = getme(mute=mute,headless=headless)
-    get.site("https://www.youtube.com/results?search_query=" + query)
-    links = set()
-    while len(links) < number:
-        elems = get.by_ids('video-title')
-        links.update([elem.get_attribute('href') for elem in elems])
-        get.web.find_element_by_tag_name('body').send_keys(Keys.PAGE_DOWN)
-    get.close()
-    return links
-
-def tag_analyzer(query,number_vids,mute=True,headless=False):
-    url_list = get_vids_for_tags(query,number_vids,mute=mute,headless=headless)
+def tag_analyzer(queries,number_vids_each,filename,mute=True,headless=False):
+    url_list = []
+    for query in queries:
+        url_list.extend(get_vids_for_tags(query,number_vids_each,mute=mute,headless=headless))
     print('Collected urls')
-    analyze_tags(url_list,tag_filename=query.replace(' ','-')+f'-{number_vids}',mute=mute,headless=headless)
+    analyze_tags(url_list,tag_filename=filename+f'-{number_vids_each*len(queries)}.txt',mute=mute,headless=headless)
