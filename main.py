@@ -40,10 +40,16 @@ if __name__ == "__main__":
     start_time = time.time()
     set_dir('r')
 
-    #tag_analyzer(['meme compilations'], 100,'meme-compilations')
+    ls = 4*[]
+    ls[0] = ['Animal', 'cute animals', 'cute animal compilations', 'cats', 'cute cats', 'animal memes']
+    ls[1] = ['Oddly Satisfying', 'Satisfaction', 'Satisfying videos']
+    ls[2] = ['Memes', 'dank memes', 'meme compilation', 'dank meme compilation']
+    ls[3] = ['Dumbest people', 'instant regret','stupid people','stupidest people']
+    tag_analyzer(ls[0], 100,'animal-tag-analysis')
 
-    get_videos('all',15,'top', subfilter='all')
-    make_videos('chaos','chaos_comp_test',11*60,outro_path='outro720.mp4', delete_originals=False)
+
+    #get_videos('all',15,'top', subfilter='all')
+   # make_videos('chaos','chaos_comp_test',11*60,outro_path='outro720.mp4', delete_originals=False)
 
 # Analyze Tags
 # Descireoptions
