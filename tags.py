@@ -1,26 +1,53 @@
 import re
+import time
 from misc import getme, get_path
 import numpy as np
-import matplotlib.pyplot as plt
 import operator
 from tabulate import tabulate
 from selenium.webdriver.common.keys import Keys
+
+def get_vids_for_tags(queries,number,mute=True,headless=True):
+    get = getme(mute=mute,headless=headless)
+    links_master = set()
+    for query in queries:
+        links = set()
+        get.site("https://www.youtube.com/results?search_query=" + query)
+        while len(links) < number:
+            elems = get.by_ids('video-title')
+            links.update([elem.get_attribute('href') for elem in elems])
+            get.web.find_element_by_tag_name('body').send_keys(Keys.PAGE_DOWN)
+        links_master.update(links)
+    get.close()
+    return links_master
+
 
 def get_tags(url_list,mute=True,headless=True):
     get = getme(mute=mute,headless=headless)
     tagmat = []
     view_list = []
+
+    kill_list = ['https://www.youtube.com/watch?v=rExLI6CZRvg','https://www.youtube.com/watch?v=906uFf1E-9s','https://www.youtube.com/watch?v=FwJIlmP4soE','https://www.youtube.com/watch?v=RiCG2ToRVjQ','https://www.youtube.com/watch?v=2GSCzz7gTl4','https://www.youtube.com/watch?v=c4fRX8JoXFg','https://www.youtube.com/watch?v=rExLI6CZRvg','https://www.youtube.com/watch?v=qe8YmfOphzk']
+    for shit in kill_list:
+        if shit in url_list:
+            url_list.remove(shit)
+
     for url in url_list:
         get.site(url)
+        time.sleep(0.1)
         page_src = get.web.page_source
-        #print(page_src)
+        time.sleep(0.1)
+
         tags = re.findall('<meta name="keywords" content="(.*?)"',page_src)[0]
-        views_str = re.findall('{"viewCount":{"simpleText":"(.*?) views"},',page_src)[0]
-        views = int(views_str.replace(',',''))
         taglist = tags.split(', ')
-        # print(taglist)
-        view_list.append(views)
         tagmat.append(taglist)
+
+        view_match = re.findall('{"viewCount":{"simpleText":"(.*?) views"}',page_src)
+        if not view_match:
+            view_list.append(0)
+        else:
+            views_str = view_match[0]
+            views = int(views_str.replace(',',''))
+            view_list.append(views)
     get.close()
     return tagmat,view_list
 
@@ -69,18 +96,8 @@ def analyze_tags(url_list,tag_filename,mute=True,headless=True):
     print('')
     tag_file.close()
 
-def get_vids_for_tags(query,number,mute=True,headless=True):
-    get = getme(mute=mute,headless=headless)
-    get.site("https://www.youtube.com/results?search_query=" + query)
-    links = set()
-    while len(links) < number:
-        elems = get.by_ids('video-title')
-        links.update([elem.get_attribute('href') for elem in elems])
-        get.web.find_element_by_tag_name('body').send_keys(Keys.PAGE_DOWN)
-    get.close()
-    return links
-
-def tag_analyzer(query,number_vids,mute=True,headless=False):
-    url_list = get_vids_for_tags(query,number_vids,mute=mute,headless=headless)
+def tag_analyzer(queries,number_vids_each,filename,mute=True,headless=False):
+    url_set = get_vids_for_tags(queries,number_vids_each,mute=mute,headless=headless)
     print('Collected urls')
-    analyze_tags(url_list,tag_filename=query.replace(' ','-')+f'-{number_vids}',mute=mute,headless=headless)
+    url_list = [i for i in url_set if i is not None]
+    analyze_tags(url_list,tag_filename=filename+f'-{number_vids_each}',mute=mute,headless=headless)

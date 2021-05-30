@@ -169,10 +169,13 @@ class getme:
             chrome_options.add_argument("--mute-audio")
         if(headless):
             chrome_options.add_argument("--headless")
-            chrome_options.add_argument('window-size=1920x1080')
+            chrome_options.add_argument('window-size=0x0')
+            chrome_options.add_argument('--disable-gpu')
+            chrome_options.headless = True
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option('useAutomationExtension', False)
-        chrome_options.add_extension('extension_5_1_0_0.crx')
+        if not headless:
+            chrome_options.add_extension('extension_5_1_0_0.crx')
         self.web = webdriver.Chrome(executable_path='chrome/chromedriver', options=chrome_options)
         self.folder = folder
     def by_id(self,x):
