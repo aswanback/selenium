@@ -3,10 +3,11 @@ import time
 import reddit as r
 from youtube import get_yt_videos
 from tiktok import tik_tok_farmer
-from misc import get_path, folder_duration,set_dir,clean_folder,getme
+from misc import get_path, folder_duration,set_dir,clean_folder,getme,notify
 from editing import concat
 from distributor import distribute
 from tags import tag_analyzer
+
 
 
 category_dict = {
@@ -41,15 +42,17 @@ if __name__ == "__main__":
     set_dir('r')
 
     ls = [None] * 5
-    ls[0] = ['cute animals', 'cute animals compilation', 'animal compilation', 'cutest animals','cats', 'cute cats', 'animal memes']
+    ls[0] = ['cute animals', 'cute animals compilation', 'animal compilation', 'cutest animals', 'cats', 'cute cats', 'animal memes']
     ls[1] = ['Oddly Satisfying', 'Satisfaction', 'Satisfying videos']
     ls[2] = ['Memes', 'dank memes', 'meme compilation', 'dank meme compilation']
     ls[3] = ['Dumbest people', 'instant regret','stupid people','stupidest people']
     ls[4] = ['reddit','best of reddit','reddit compilations','funny reddit']
-    tag_analyzer(ls[0], 100,'animal-tag-analysis',headless=False)
 
-    #get_videos('all',15,'top', subfilter='all')
-   # make_videos('chaos','chaos_comp_test',11*60,outro_path='outro720.mp4', delete_originals=False)
+    try:
+        tag_analyzer(ls[2], 50, 'satisfying-tag-analysis', headless=False)
+
+    # get_videos('all',15,'top', subfilter='all')
+    # make_videos('chaos','chaos_comp_test',11*60,outro_path='outro720.mp4', delete_originals=False)
 
     # sub_list = ['r/aww','r/Pigifs','r/cats']
     # percents_list = [50,10,40]
@@ -71,8 +74,9 @@ if __name__ == "__main__":
     #tik_tok_farmer(number=30)
     #print(f"Duration: {datetime.timedelta(seconds=folder_duration(folder))}") #Print duration of folder
 
-    print(f'Execution time - {datetime.timedelta(seconds=round(time.time() - start_time))}')
-    #notify('Selenium', '', 'Process finished')
+    finally:
+        print(f'Execution time - {datetime.timedelta(seconds=round(time.time() - start_time))}')
+        notify('Selenium', '', 'Process finished')
 
 
 
