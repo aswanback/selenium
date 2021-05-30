@@ -11,47 +11,86 @@ from selenium.webdriver.support import expected_conditions as EC
 import requests
 import shutil
 
-username = str(subprocess.check_output('whoami'))
-name = None
-if 'andrewswanback' in username:
-    name = 'andrew'
-elif 'calebstevens' in username:
-    name = 'caleb'
-path_dict = {
-    'andrew': '/Users/andrewswanback/Documents/sd/content',
-    'caleb': '/Users/calebstevens/Documents/selenium_data',
-}
-path = path_dict[name]
+def get_path():
+    username = str(subprocess.check_output('whoami'))
+    name = None
+    if 'andrewswanback' in username:
+        name = 'andrew'
+    elif 'calebstevens' in username:
+        name = 'caleb'
+    path_dict = {
+        'andrew': '/Users/andrewswanback/Documents/sd/content',
+        'caleb': '/Users/calebstevens/Documents/selenium_data',
+    }
+    return path_dict[name]
 def set_dir(foldername,filename=''):
-    if foldername == '':
-        if filename != '':
-            return path+'/'+filename
-        else:
-            return path
-    if filename == '':
-        full_path = '{}/{}'.format(path, foldername)
+    path = get_path()
+    if foldername == '' and filename == '':
+        return path
+    elif foldername == '' and filename != '':
+        return path+'/'+filename
+    elif foldername != '' and filename =='':
+        full_path = f'{path}/{foldername}'
         if not os.path.exists(full_path):
             os.mkdir(full_path)
+        return full_path
     else:
-        dir_path = '{}/{}'.format(path, foldername)
-        full_path = '{}/{}/{}'.format(path, foldername,filename)
+        dir_path = f'{path}/{foldername}'
+        full_path = f'{path}/{foldername}/{filename}'
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
-    return full_path # path setu # set up # Set up path
+        return full_path
+
+def folder_namer(base_name,override_name=None,new_folder_every_run=True,base_directory=None):
+    if base_directory is not None:
+        base_directory = '/' + base_directory
+    else:
+        base_directory = ''
+
+    if override_name is not None:
+        return set_dir(override_name)
+
+    if new_folder_every_run is False:
+        return set_dir(base_directory+base_name)
+    else:
+        path = get_path()
+        i = 1
+        while f'{base_name}{i}' in os.listdir(path+base_directory):
+            i += 1
+        return f'{base_name}{i}'
+
+'''
+        if foldername is None:
+            fi = 1
+            while f'{subreddit}-{filter}-{subfilter[4:]}-{fi}' in os.listdir(path+base_directory):
+                fi += 1
+            foldername = f'{subreddit}-{filter}-{subfilter[4:]}-{fi}'
+'''
+
 
 def clear(folder):
     os.system('rm {}/*'.format(folder))
+
+def clean_folder(folder,exception_list=None):
+    if exception_list is not None:
+        rm_list = [i for i in os.listdir(folder) if i not in exception_list]
+    else:
+        rm_list = [i for i in os.listdir(folder)]
+    for file in rm_list:
+        os.system(f'rm -f {folder}/{file}')
+
 def clean(folder,hard=False):
     if hard == True:
         remove_list = [name for name in os.listdir(folder) if ('.txt' or '.DS_Store' or 'comp.mp4' or 'final.mp4') not in name]
     else:
-        remove_list = [name for name in os.listdir(folder) if ('.txt' or '-e.mp4' or '.DS_Store' or 'comp.mp4' or 'final.mp4')not in name]
+        remove_list = [name for name in os.listdir(folder) if ('.txt' or '-e.mp4' or '.DS_Store' or 'comp.mp4' or 'final.mp4') not in name]
     for i in remove_list:
-        os.system('rm {}'.format(folder+'/'+i))
+        os.system('rm -f {}'.format(folder+'/'+i))
 def folder_duration(folder):
     total = 0
     for i in os.listdir(folder):
-        total += get_length(i)
+        if 'mp4' in i:
+            total += get_length(folder+'/'+i)
     return total
 def batch_rename(folder):
     #if active:
@@ -115,7 +154,7 @@ def notify(title, subtitle, message):
 
 class getme:
     timeout = 6
-    def __init__(self,folder,incognito=False,headless=False,mute=False):
+    def __init__(self,folder=get_path(),incognito=False,headless=False,mute=False):
         chrome_options = webdriver.ChromeOptions()
         prefs = {'download.default_directory': folder}
         chrome_options.add_argument("--disable-notifications")
@@ -130,6 +169,7 @@ class getme:
             chrome_options.add_argument("--mute-audio")
         if(headless):
             chrome_options.add_argument("--headless")
+            chrome_options.add_argument('window-size=1920x1080')
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option('useAutomationExtension', False)
         chrome_options.add_extension('extension_5_1_0_0.crx')
@@ -137,6 +177,9 @@ class getme:
         self.folder = folder
     def by_id(self,x):
         id = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD='id')
+        return id.element
+    def by_ids(self,x):
+        id = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD='id',multiple=True)
         return id.element
     def by_name(self,x):
         name = by_var(web2=self.web, timeout=self.timeout, _method_var=x, METHOD='name')

@@ -1,8 +1,9 @@
 import time
 import os
-from misc import path, getme, set_dir, batch_rename
+from misc import get_path, getme, set_dir, batch_rename
 
 def tik_tok_farmer(number,foldername=None):
+    path = get_path()
     if foldername is None:
         fi = 0
         while f'tiktok' + f'{fi}' in os.listdir(path):

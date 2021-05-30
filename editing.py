@@ -2,84 +2,99 @@ import subprocess
 import os
 import re
 import misc
+import random
 
-def concat(folder,resolution='720p'):
+def concat(folder,resolution='720p',outro_path='outro720.mp4',random_dbl=True, remove_txts=False):
     if resolution == '1080p':
         w = 1920
         h = 1080
-        intro_path = ''  # main.set_dir('' + 'intro.mp4')
-        outro_path = misc.set_dir('' + f'outro{h}.mp4')
     elif resolution == '720p':
         w = 1280
         h = 720
-        intro_path = ''  # main.set_dir('' + 'intro.mp4')
-        outro_path = misc.set_dir('' + f'outro{h}.mp4')
     elif resolution == 'tiktok':
         w = 576
         h = 1024
-        intro_path = ''  # main.set_dir('' + 'intro.mp4')
-        outro_path = '' # main.set_dir('' + f'outro{h}.mp4')
     else:
         print('unsupported resolution')
         return # Resolution solving
 
-    listfile = open(folder + '/listfile.txt', "w")
-    files = [name for name in os.listdir(folder) if 'video' in name and '-e.mp4' not in name]
-    files.sort() # Make list file
-    # print(f'file list: {files}')
+    files = [name for name in os.listdir(folder) if 'video' in name and '-e.mp4' not in name and '-a.mp4' not in name]
+    files.sort()
 
-    file_num = 1
+    list_names = [f"file '{name[0:-4]}-e.mp4'\n" for name in os.listdir(folder) if 'video' in name and '-e.mp4' not in name and '-a.mp4' not in name]
+    list_names.sort()
+    zlist = open(folder + '/zlist.txt', "w")
+    zlist.writelines(list_names)
+    zlist.close()
+
     for i in files:
         filename_orig = folder+'/'+i
         filename_new = filename_orig[0:-4]+'-e.mp4'
         if (i[0:-4] + '-e.mp4') not in os.listdir(folder):
-            print(f'converting {i}...  ',end='')
-            video_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))
-            audio_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'a:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))
+            print(f'converting {i}...',end='')
+            video_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))[2:-3]
+            audio_codec = str(subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'a:0', '-show_entries', 'stream=codec_name', '-of', 'default=noprint_wrappers=1:nokey=1',filename_orig]))[2:-3]
             wxh = str(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'stream=width,height', '-of', 'csv=p=0:s=x',filename_orig]))
-            #MODIFY RAW TERMINAL OUTPUT
-            video_codec = video_codec[2:-3]
-            audio_codec = audio_codec[2:-3]
             [width,height] = re.split('x',wxh)
             width = width[2:]
-            height = height[0:-5] # get codec and dimension properties
-            print(f'wid{width}, h{height}')
-            key = re.findall(r'(?:video\d+-e.mp4)',filename_new)
-            if key in os.listdir(folder):
-                continue
-            if audio_codec != 'aac' or video_codec != 'h264':
+            height = height[0:-3]
+            #print(f'wid{width}, h{height}')
+
+            if audio_codec == None or audio_codec == '':
+                print('adding audio and encoding...')
+                os.system(f'ffmpeg -y -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -i {filename_orig} -c:v copy -c:a aac -shortest {filename_orig[0:-4]+"-a.mp4"}')
+                os.system(f'ffmpeg -y -hide_banner -loglevel error -i {filename_orig[0:-4]+"-a.mp4"} -vf "scale=w={w}:h={h}:force_original_aspect_ratio=1,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 -c:v libx264 -c:a aac {filename_new}')
+            elif audio_codec != 'aac' or video_codec != 'h264':
                 print('encoding...')
-                os.system(f'ffmpeg -y -hide_banner -loglevel error -stats -i {filename_orig} -vf "scale=w={w}:h={h}:force_original_aspect_ratio=1,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 -c:v libx264 -c:a aac {filename_new}')
+                os.system(f'ffmpeg -y -hide_banner -loglevel error -i {filename_orig} -vf "scale=w={w}:h={h}:force_original_aspect_ratio=1,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 -c:v libx264 -c:a aac {filename_new}')
             elif width != w or height != h:
                 print('padding...')
-                os.system(f'ffmpeg -y -hide_banner -loglevel error -stats -i {filename_orig} -vf "scale=w={w}:h={h}:force_original_aspect_ratio=1,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 {filename_new}')
+                os.system(f'ffmpeg -y -hide_banner -loglevel error -i {filename_orig} -vf "scale=w={w}:h={h}:force_original_aspect_ratio=1,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 {filename_new}')
             else:
                 print('no conversion needed')
                 os.rename(filename_orig,filename_new) # Reencode and pad if neccessary
         else:
             print(f'{i} already converted')
-        listfile.write("file '{}'\n".format(filename_new))
-        file_num += 1
 
     ##CONCATENATION
-    listfile.close()
-    comp_path = folder+'/comp.mp4'
     print('concatenating videos...')
-    os.system(f'ffmpeg -y -hide_banner -loglevel error -stats -safe 0 -f concat -segment_time_metadata 1 -i {folder+"/listfile.txt"} -c copy {comp_path}')
+    os.system(f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i {folder+"/zlist.txt"} -c copy {folder+"/zcomp.mp4"}')
 
-    iolist = open(folder + '/iolist.txt', 'w')
-    if intro_path != '':
-        if f'intro{h}.mp4' not in os.listdir(folder):
-            os.system('cp {} {}'.format(intro_path, folder))
-        iolist.write(f"file '{folder}/intro{h}.mp4'\n")
-    iolist.write(f"file '{folder}/comp.mp4'\n")
-    if outro_path != '':
-        if f'outro{h}.mp4' not in os.listdir(folder):
-            os.system('cp {} {}'.format(outro_path, folder))
-        iolist.write(f"file '{folder}/outro{h}.mp4'\n")
-    iolist.close() # iolist setup
-    print('adding intro/outro...')
-    os.system(f'ffmpeg -y -hide_banner -loglevel error -stats -safe 0 -f concat -segment_time_metadata 1 -i {folder+"/iolist.txt"} -c copy {folder}/final.mp4')
+    if outro_path != None:
+        zlisto = open(folder + '/zlisto.txt', 'w')
+        zlisto.write(f"file '{folder}/zcomp.mp4'\n")
+        zlisto.write(f"file '{folder}/{outro_path}'\n")
+        zlisto.close() # zlist setup
+
+        if outro_path not in os.listdir(folder):
+            os.system(f'cp {outro_path} {folder}')
+        print('adding intro/outro...')
+        os.system(f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i {folder+"/zlisto.txt"} -c copy {folder}/final.mp4')
+
+    if random_dbl:
+        print('Creating randomized version...')
+        zlistr = open(folder + '/zlistr.txt', 'w')
+        random.shuffle(list_names)
+        zlistr.writelines(list_names)
+        zlistr.close()
+
+        print('\tconcatenating videos...')
+        os.system(f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i {folder + "/zlistr.txt"} -c copy {folder + "/zcompr.mp4"}')
+
+        if outro_path != None:
+            zlistor = open(folder + '/zlistor.txt', 'w')
+            zlistor.write(f"file '{folder}/zcompr.mp4'\n")
+            zlistor.write(f"file '{folder}/{outro_path}'\n")
+            zlistor.close()
+            if outro_path not in os.listdir(folder):
+                os.system(f'cp {outro_path} {folder}')
+            print('\tadding intro/outro...')
+            os.system(f'ffmpeg -y -hide_banner -loglevel error -safe 0 -f concat -segment_time_metadata 1 -i {folder + "/zlistor.txt"} -c copy {folder}/finalr.mp4')
+
+    if remove_txts:
+        rm_list = ['zlist.txt','zlistor.txt','zlist.txt','zlistr.txt']
+        for file in rm_list:
+            os.system(f'rm -f {file}')
     print('finished')
     return
 

@@ -5,9 +5,10 @@ from editing import get_length
 import time
 import os
 import random
-from misc import getme, batch_rename, path, wait_until_download_complete,set_dir
+from misc import getme, batch_rename, get_path, wait_until_download_complete,set_dir
 
 def get_yt_videos(query, duration, max_length=5*60,foldername=None):
+    path = get_path()
     if foldername is None:
         fi = 0
         mod_query = query.translate({ord(i): '-' for i in '/ '})
