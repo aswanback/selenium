@@ -46,7 +46,7 @@ if __name__ == "__main__":
     ls[2] = ['Memes', 'dank memes', 'meme compilation', 'dank meme compilation']
     ls[3] = ['Dumbest people', 'instant regret','stupid people','stupidest people']
     ls[4] = ['reddit','best of reddit','reddit compilations','funny reddit']
-    tag_analyzer(ls[0], 100,'animal-tag-analysis',headless=False)
+    tag_analyzer(ls[4], 100,'reddit-tag-analysis',headless=False)
 
     #get_videos('all',15,'top', subfilter='all')
    # make_videos('chaos','chaos_comp_test',11*60,outro_path='outro720.mp4', delete_originals=False)
