@@ -40,13 +40,13 @@ if __name__ == "__main__":
     start_time = time.time()
     set_dir('r')
 
-    ls = 5*[]
-    ls[0] = ['Animal', 'cute animals', 'cute animal compilations', 'cats', 'cute cats', 'animal memes']
+    ls = [None] * 5
+    ls[0] = ['cute animals', 'cute animals compilation', 'animal compilation', 'cutest animals','cats', 'cute cats', 'animal memes']
     ls[1] = ['Oddly Satisfying', 'Satisfaction', 'Satisfying videos']
     ls[2] = ['Memes', 'dank memes', 'meme compilation', 'dank meme compilation']
     ls[3] = ['Dumbest people', 'instant regret','stupid people','stupidest people']
     ls[4] = ['reddit','best of reddit','reddit compilations','funny reddit']
-    tag_analyzer(ls[0], 100,'animal-tag-analysis')
+    tag_analyzer(ls[0], 100,'animal-tag-analysis',headless=False)
 
     #get_videos('all',15,'top', subfilter='all')
    # make_videos('chaos','chaos_comp_test',11*60,outro_path='outro720.mp4', delete_originals=False)

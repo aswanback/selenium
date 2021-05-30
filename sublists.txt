@@ -1,5 +1,5 @@
 MASTER LIST:
-['r/blackmagicfuckery', 'r/publicfreakout', 'r/fightporn', 'r/streetfights', 'r/contagiouslaughter', 'r/shittymobilegameads', 'r/holdmyfries', 'r/holdmybeer', 'r/watchthingsfly', 'r/unexpected', 'r/memes', 'r/dankmemes', 'r/holdmyfeedingtube', 'r/tiktokcringe', 'r/shitposting', 'r/gayspiderbrothel', 'r/perfectlycutscreams', 'r/abruptchaos', 'r/instantregret', 'r/holdmycosmo', 'r/maybemaybemaybe', 'r/nononoyes', 'r/yesyesyesno']
+['r/blackmagicfuckery', 'r/idiotsincars',''r/publicfreakout', 'r/fightporn', 'r/streetfights', 'r/contagiouslaughter', 'r/shittymobilegameads', 'r/holdmyfries', 'r/holdmybeer', 'r/watchthingsfly', 'r/unexpected', 'r/memes', 'r/dankmemes', 'r/holdmyfeedingtube', 'r/tiktokcringe', 'r/shitposting', 'r/gayspiderbrothel', 'r/perfectlycutscreams', 'r/abruptchaos', 'r/instantregret', 'r/holdmycosmo', 'r/maybemaybemaybe', 'r/nononoyes', 'r/yesyesyesno']
 
 maybe
 ['r/maybemaybemaybe', 'r/nononoyes', 'r/yesyesyesno','r/holdmycosmo', 'r/tiktokcringe']
@@ -18,10 +18,8 @@ chaos
 [15,20,10,20,15,10,10]
 
 dumb
-['r/instantregret', 'r/holdmyfeedingtube', 'r/publicfreakout, 'r/holdmybeer','r/holdmycosmo', 'r/holdmyfries']
+['r/instantregret', 'r/holdmyfeedingtube', 'r/publicfreakout, 'r/holdmybeer','r/holdmycosmo', 'r/holdmyfries','r/idiotsincars']
 [30,15,10,15,15,15]
-
-
 
 animals
 ['r/aww', 'r/cats', 'r/Catswhoyell', 'r/AnimalsBeingJerks', 'r/Pigifs', 'r/Eyebleach', 'r/StartledCats', 'r/AnimalsBeingDerps', 'r/chonkers', 'r/tippytaps']
@@ -29,4 +27,4 @@ animals
 
 satisfaction
 ['r/bettereveryloop', 'r/Satsifyingasfuck', 'r/oddlysatisfying', 'r/powerwashingporn', 'r/blackmagicfuckery']
-[25,25,30,10, 10]
+[25,25,30,10,10]
