@@ -3,10 +3,10 @@ import time
 import reddit as r
 from youtube import get_yt_videos
 from tiktok import tik_tok_farmer
-from misc import get_path, folder_duration,set_dir,clean_folder,getme,notify
+from misc import get_path, folder_duration,set_dir,clean_folder,notify
 from editing import concat
 from distributor import distribute
-from tags import analyze_titles, metadata_analyzer, analyze_tags
+from tags import metadata_analyzer
 
 category_dict = {
     'chaos': [['r/abruptchaos','r/unexpected','r/watchthingsfly','r/maybemaybemaybe','r/yesyesyesno', 'r/perfectlycutscreams','r/holdmycosmo'],[15,20,10,20,15,10,10]],
@@ -47,15 +47,10 @@ if __name__ == "__main__":
     ls[4] = ['reddit','best of reddit','reddit compilations','funny reddit']
 
     try:
-        l = ['i hate my gay life sky sky sky ','i am a cloud homosexual',' life why homosexual are you gay','there are no clouds in the sky sky']
+        l = ['i hate my gay life sky sky sky ','i am a cloud why homosexual',' life why homosexual are you gay','there are no clouds in the sky sky']
         v = [1,10,100,1000]
-        #analyze_titles(l,v,'test')
-
-        metadata_analyzer(queries=ls[1], number_vids_each=4, foldername='metadata/metatest')
-
-        # tag_analyzer(ls[2], 50, 'dumbest', headless=False)
-
-
+        #analyze_text(l,v,2,'test')
+        metadata_analyzer(queries=ls[2], number_vids_each=50, ngram_count=10, foldername='metadata/memes2',headless=True)
 
     # get_videos('all',15,'top', subfilter='all')
     # make_videos('chaos','chaos_comp_test',11*60,outro_path='outro720.mp4', delete_originals=False)

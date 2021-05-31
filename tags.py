@@ -1,16 +1,16 @@
 import re
 import time
-from misc import getme, get_path, set_dir
-import numpy as np
-import operator
-from tabulate import tabulate
-from selenium.webdriver.common.keys import Keys
 import nltk
 import string
+import numpy as np
+import operator
+from misc import getme, get_path, set_dir
+from tabulate import tabulate
+from selenium.webdriver.common.keys import Keys
 #nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-
+from nltk.util import ngrams
 
 def get_vids(queries,number,mute=True,headless=True):
     get = getme(mute=mute,headless=headless)
@@ -44,15 +44,24 @@ def get_metadata(url_list,mute=True,headless=True):
         get.site(url)
         page_src = get.web.page_source
 
-        title = re.findall('<meta name="title" content="(.*?)">',page_src)[0]
+        try:
+            title = re.findall('<meta name="title" content="(.*?)">',page_src)[0]
+        except IndexError:
+            title = ''
         title_list.append(title)
 
-        description = re.findall('"description":{"simpleText":"(.*?)"},',page_src)[0]
+        try:
+            description = re.findall('"description":{"simpleText":"(.*?)"},',page_src)[0]
+        except IndexError:
+            description = ''
         description_list.append(description)
 
-        tags = re.findall('<meta name="keywords" content="(.*?)"',page_src)[0]
-        taglist = tags.split(', ')
-        tagmat.append(taglist)
+        try:
+            tags = re.findall('<meta name="keywords" content="(.*?)"',page_src)[0]
+            #taglist = tags.split(', ')
+        except IndexError:
+            tags = ''
+        tagmat.append(tags)
 
         view_match = re.findall('{"viewCount":{"simpleText":"(.*?) view',page_src)
         if not view_match:
@@ -64,141 +73,79 @@ def get_metadata(url_list,mute=True,headless=True):
             else:
                 views = int(views_str.replace(',',''))
                 view_list.append(views)
+
     get.close()
     return tagmat,view_list, description_list, title_list
 
-def analyze_tags(tag_lists,view_list,tag_filename):
-    assert len(tag_lists) == len(view_list)
-
-    flat_list = []
-    for list in tag_lists:
-        flat_list.extend(list)
-    tag_dict = dict.fromkeys(flat_list, 0)
-    for i in range(len(flat_list)):
-        tag_dict[flat_list[i]] += 1
-
-    score_dict = dict.fromkeys(flat_list,0)
-    for j in range(len(tag_lists)):
-        for i in range(len(tag_lists[j])):
-            score_dict[tag_lists[j][i]] += tag_dict[tag_lists[j][i]]*view_list[j]
-
-    _sorted_tags = sorted(score_dict.items(), key=operator.itemgetter(1))[::-1]
-    sorted_tags = [i for i in _sorted_tags if i[1] > 1]
-    avg_score = np.nanmean([i[1] for i in sorted_tags])
-    std_score = np.nanstd([i[1] for i in sorted_tags])
-    sorted_tags = [(i,(j-avg_score)/std_score) for i,j in sorted_tags]
-
-    tag_info = []
-    for i in range(len(sorted_tags)):
-        tag_info.append((sorted_tags[i][0],tag_dict[sorted_tags[i][0]]/len(tag_lists),sorted_tags[i][1]))
-
-    avg_num_tags = np.nanmean([len(ls) for ls in tag_lists])
-    std_num_tags = np.nanstd([len(ls) for ls in tag_lists])
-
-    path = get_path()
-    tag_file = open(f'{path}/{tag_filename}.txt', 'w')
-    print(f'Number of tags μ,σ,95% C.I.: {avg_num_tags:.1f},{std_num_tags:.1f},[{avg_num_tags - 2 * std_num_tags:.1f},{avg_num_tags + 2 * std_num_tags:.1f}]\n')
-    print(f'Number of tags μ,σ,95% C.I.: {avg_num_tags:.1f},{std_num_tags:.1f},[{avg_num_tags - 2 * std_num_tags:.1f},{avg_num_tags + 2 * std_num_tags:.1f}]\n',file=tag_file)
-    print(tabulate(tag_info, headers=[f'Tags ({len(sorted_tags)} from {len(tag_lists)} videos)', 'Frequency', 'Score'], floatfmt=['.1f','.0%','.1f']), file=tag_file)
-    print(tabulate(tag_info, headers=[f'Tags ({len(sorted_tags)} from {len(tag_lists)} videos)', 'Frequency', 'Score'], floatfmt=['.1f','.0%','.1f']))
-    [labels, freqs, scores] = zip(*tag_info)
-    print(f'\nSuggested tag list: ',end='')
-    print(f'\nSuggested tag list: ',file=tag_file,end='')
-    for i in labels[0:int(avg_num_tags)]:
-        print(f'{i}, ', end='')
-        print(f'{i}, ',file=tag_file,end='')
-    print('',file=tag_file)
-    print('')
-    tag_file.close()
-
-def analyze_titles(title_list,view_list,filename,num_displayed=500,stem=True,remove_punctuation=True,all_lowercase=False,sort_method='score'):
-
-    title_matrix = []
-    for title in title_list:
-        title = title.replace('\n', '')
-        title = title.replace('\\n','')
-        title = title.replace('\\\\n','')
-        title = title.translate({ord(i): None for i in '\\\n'})
-        title_words = nltk.word_tokenize(title)
-        bad_words = ['http','.com','.net',"'",'.ly','.gl']
-        for j in bad_words:
-            title_words = [i for i in title_words if j not in i]
-
-        title_no_stopwords = [w for w in title_words if w.lower() not in stopwords.words('english')]
-
-        if all_lowercase and remove_punctuation:
-            title = [w.lower() for w in title_no_stopwords if w not in string.punctuation]
-        elif all_lowercase and not remove_punctuation:
-            title = [w.lower() for w in title_no_stopwords]
-        elif not all_lowercase and remove_punctuation:
-            title = [w for w in title_no_stopwords if w not in string.punctuation]
-        elif not all_lowercase and not remove_punctuation:
-            title = title_no_stopwords
+def clean_and_make_ngrams(text,ngram_count, lowercase=False,stem=True):
+    text = text.replace('\\n', '')
+    text = text.replace('\\\\n', '')
+    text = text.replace('/', '')
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    if lowercase:
+        text = text.lower()
+    n_gram_obj = ngrams(nltk.word_tokenize(text), ngram_count)
+    n_grams = [' '.join(grams) for grams in n_gram_obj]
+    if ngram_count == 1:
         if stem:
             stemmer = PorterStemmer()
-            title = [stemmer.stem(i) for i in title]
-        title_matrix.append(title)
+            n_grams = [stemmer.stem(i) for i in n_grams]
+        n_grams = [i for i in n_grams if i not in stopwords.words('english')]
+    n_grams = [i for i in n_grams if 'https' not in i]
+    return n_grams
 
-    word_list = []
-    for title in title_matrix:
-        for word in title:
-            if word not in word_list:
-                word_list.append(word)
-    print(word_list)
-
-    doc_word = []
-    doc_word_norm = []
-    for i in range(len(title_matrix)):
-        doc_vec = [0] * len(word_list)
-        doc_vec_norm = [0] * len(word_list)
-        doc_vec_no_rep = [0] * len(word_list)
-        for word in title_matrix[i]:
-            ind = word_list.index(word)
-            doc_vec[ind] += view_list[i]
-            if doc_vec_norm[ind] == 0:
-                doc_vec_norm[ind] += 1
-        doc_word.append(doc_vec)
-        doc_word_norm.append(doc_vec_norm)
-    doc_word = np.array(doc_word)
-    doc_word_norm = np.array(doc_word_norm)
-
-    word_raw_views = [sum(i) for i in doc_word.T]
-    mean_views = np.nanmean(word_raw_views)
-    std_views = np.nanstd(word_raw_views)
-    word_view_score = [(i-mean_views)/std_views for i in word_raw_views]
-
-    word_raw_freq = [sum(i) for i in doc_word_norm.T]
-    word_freq_frac_of_titles = [i/len(title_list) for i in word_raw_freq]
-    word_freq_frac_of_words = [i/sum(word_raw_freq) for i in word_raw_freq]
-    word_matrix = [[word_list[i],word_view_score[i],word_freq_frac_of_titles[i],word_freq_frac_of_words[i]] for i in range(len(word_list))]
-
-    word_matrix = [word_matrix[i] for i in range(len(word_matrix)) if word_raw_freq[i] > 1]
-
-    if sort_method == 'score':
-        words_sorted = sorted(word_matrix, key=operator.itemgetter(1))[::-1]
-    elif sort_method == 'word freq':
-        words_sorted = sorted(word_matrix, key=operator.itemgetter(2))[::-1]
-    elif sort_method == 'title freq':
-        words_sorted = sorted(word_matrix, key=operator.itemgetter(3))[::-1]
-    else:
-        print("Unsupported sort_method, choose 'score', 'word freq', or 'title freq'. Auto-choosing 'score'")
-        words_sorted = sorted(word_matrix, key=operator.itemgetter(1))[::-1]
-    words_sorted = words_sorted[0:num_displayed]
-
-    avg_title_length = np.nanmean([len(title) for title in title_matrix])
-    std_title_length = np.nanstd([len(title) for title in title_matrix])
+def analyze_text(text_list,view_list,ngram_count,filename,num_displayed=50,stem=True,all_lowercase=False,debug=False):
+    assert len(text_list) == len(view_list)
 
     path = get_path()
     titlefile = open(f'{path}/{filename}.txt', 'w')
-    print(f'Length μ,σ,95% C.I.: {avg_title_length:.1f}, {std_title_length:.1f}, [{avg_title_length - 2 * std_title_length:.1f}, {avg_title_length + 2 * std_title_length:.1f}]\n')
-    print(f'Length μ,σ,95% C.I.: {avg_title_length:.1f}, {std_title_length:.1f}, [{avg_title_length - 2 * std_title_length:.1f}, {avg_title_length + 2 * std_title_length:.1f}]\n',file=titlefile)
-    print(f'Sorted by {sort_method}')
-    print(tabulate(words_sorted,headers=[f'Top {num_displayed} words from {len(title_list)} videos', 'Score', 'Freq per video', 'Freq per word'],floatfmt=['.3f','.1f','.0%','.0%']))
-    print(tabulate(words_sorted,headers=[f'Top {num_displayed} words from {len(title_list)} videos', 'Score', 'Freq per video', 'Freq per word'],floatfmt=['.3f','.1f','.0%','.0%']), file=titlefile)
+    n_grams_1 = []
+    for text in text_list:
+        n_grams_1.append(clean_and_make_ngrams(text,1,stem=stem,lowercase=all_lowercase))
+    avg_text_length = np.nanmean([len(n_gram) for n_gram in n_grams_1])
+    std_text_length = np.nanstd([len(n_gram) for n_gram in n_grams_1])
+    print(f'ngram_count = {ngram_count}, total {len(text_list)} videos, average {np.nanmean(view_list):.0f} views',file=titlefile)
+    print(f'length μ,σ,95% C.I.: {avg_text_length:.1f}, {std_text_length:.1f}, [{avg_text_length - 2 * std_text_length:.1f}, {avg_text_length + 2 * std_text_length:.1f}]\n',file=titlefile)
+    if debug:
+        print(f'ngram_count = {ngram_count}, total {len(text_list)} videos, average {np.nanmean(view_list):.0f} views',file=titlefile)
+        print(f'Length μ,σ,95% C.I.: {avg_text_length:.1f}, {std_text_length:.1f}, [{avg_text_length - 2 * std_text_length:.1f}, {avg_text_length + 2 * std_text_length:.1f}]\n')
+
+
+    for n_count in range(ngram_count,0,-1):
+        n_grams = []
+        for text in text_list:
+            n_grams.append(clean_and_make_ngrams(text,n_count,stem=stem,lowercase=all_lowercase))
+        n_grams_flat = list(set([item for sublist in n_grams for item in sublist]))
+        n_dict = {gram:ind for ind,gram in enumerate(n_grams_flat)}
+
+        n_grams_views = [0] * len(n_grams_flat)
+        n_grams_freqs = [0] * len(n_grams_flat)
+        n_grams_count = [0] * len(n_grams_flat)
+        for gram_list,views in zip(n_grams,view_list):
+            for gram in gram_list:
+                i = n_dict[gram]
+                n_grams_views[i] += views
+                n_grams_freqs[i] += 1
+                if n_grams_count[i] == 0:
+                    n_grams_count[i] += 1
+        if sum([i for i in n_grams_freqs if i > 1]) == 0:
+            print(f'\tNo ngrams of size {n_count} found. Skipping...')
+        else:
+            mean_views = np.nanmean([i for i,j in zip(n_grams_views,n_grams_freqs) if j > 1])
+            std_views = np.nanstd([i for i,j in zip(n_grams_views, n_grams_freqs) if j > 1])
+            if std_views == 0:
+                std_views = 1
+            matr = [[k,(i-mean_views)/std_views,j] for i,j,k,l in zip(n_grams_views, n_grams_freqs, n_grams_flat,n_grams_count) if j > 1]
+            words_sorted = sorted(matr, key=operator.itemgetter(1))[::-1][0:num_displayed]
+
+            if debug:
+                print(tabulate(words_sorted,headers=[f'Top n_grams size {n_count}', 'Score', 'Frequency'],floatfmt=['.3f','.1f','.0%']))
+                print('\n')
+            print(tabulate(words_sorted,headers=[f'Top n_grams size {n_count}', 'Score', 'Frequency'],floatfmt=['.3f','.1f','.0%']), file=titlefile)
+            print('\n',file=titlefile)
     titlefile.close()
 
-
-def metadata_analyzer(queries,number_vids_each,foldername,mute=True,headless=False):
+def metadata_analyzer(queries,number_vids_each,ngram_count,foldername,debug=False,mute=True,headless=False):
     path = get_path()
     url_set = get_vids(queries,number_vids_each,mute=mute,headless=headless)
     url_list = [i for i in url_set if i is not None]
@@ -214,20 +161,63 @@ def metadata_analyzer(queries,number_vids_each,foldername,mute=True,headless=Fal
     file.write(str(title_list))
     file.close()
 
-    analyze_tags(tag_lists, view_list, tag_filename=f'{foldername}/tags-{number_vids_each}')
-    analyze_titles(title_list, view_list, f'{foldername}/titles-{number_vids_each}')
-    analyze_titles(description_list, view_list, f'{foldername}/descriptions-{number_vids_each}')
+    print('Analyzing tags...')
+    #analyze_tags(tag_lists, view_list, tag_filename=f'{foldername}/tags-{number_vids_each}',debug=debug)
+    analyze_text(tag_lists,view_list,1,f'{foldername}/tags-{number_vids_each}',debug=debug)
+    print('Analyzing titles...')
+    analyze_text(title_list, view_list, ngram_count,f'{foldername}/titles-{number_vids_each}',debug=debug)
+    print('Analyzing descriptions...')
+    analyze_text(description_list, view_list, ngram_count,f'{foldername}/descriptions-{number_vids_each}',debug=debug)
 
     return tag_lists,view_list,description_list,title_list
 
 
-
-
-
-# Builds a term-frequency matrix
-# Takes in a doc word matrix (as built in buildDocWordMatrix)
-# Returns a term-frequency matrix, which should be a 2-dimensional numpy array
-# with the same shape as docword
+# def analyze_tags(tag_lists,view_list,tag_filename,num_displayed,debug=False):
+#     assert len(tag_lists) == len(view_list)
+#
+#     flat_list = []
+#     for list in tag_lists:
+#         flat_list.extend(list)
+#     tag_dict = dict.fromkeys(flat_list, 0)
+#     for i in range(len(flat_list)):
+#         tag_dict[flat_list[i]] += 1
+#
+#     score_dict = dict.fromkeys(flat_list,0)
+#     for j in range(len(tag_lists)):
+#         for i in range(len(tag_lists[j])):
+#             score_dict[tag_lists[j][i]] += tag_dict[tag_lists[j][i]]*view_list[j]
+#
+#     _sorted_tags = sorted(score_dict.items(), key=operator.itemgetter(1))[::-1]
+#     sorted_tags = [(i,j) for i,j in _sorted_tags if j > 1]
+#
+#     avg_score = np.nanmean([i[1] for i in sorted_tags])
+#     std_score = np.nanstd([i[1] for i in sorted_tags])
+#     sorted_tags = [(i,(j-avg_score)/std_score) for i,j in sorted_tags]
+#
+#     tag_info = []
+#     for i in range(len(sorted_tags)):
+#         tag_info.append((sorted_tags[i][0],tag_dict[sorted_tags[i][0]]/len(tag_lists),sorted_tags[i][1]))
+#
+#     avg_num_tags = np.nanmean([len(ls) for ls in tag_lists])
+#     std_num_tags = np.nanstd([len(ls) for ls in tag_lists])
+#
+#     path = get_path()
+#     tag_file = open(f'{path}/{tag_filename}.txt', 'w')
+#     [labels, freqs, scores] = zip(*tag_info)
+#     if debug:
+#         print(f'Number of tags μ,σ,95% C.I.: {avg_num_tags:.1f},{std_num_tags:.1f},[{avg_num_tags - 2 * std_num_tags:.1f},{avg_num_tags + 2 * std_num_tags:.1f}]\n')
+#         print(tabulate(tag_info,headers=[f'Tags ({len(sorted_tags)} from {len(tag_lists)} videos)', 'Frequency', 'Score'],floatfmt=['.1f', '.0%', '.1f']))
+#         print(f'\nSuggested tag list: ', end='')
+#         for i in labels[0:int(avg_num_tags)]:
+#             print(f'{i}, ', end='')
+#         print('')
+#     print(f'Number of tags μ,σ,95% C.I.: {avg_num_tags:.1f},{std_num_tags:.1f},[{avg_num_tags - 2 * std_num_tags:.1f},{avg_num_tags + 2 * std_num_tags:.1f}]\n',file=tag_file)
+#     print(tabulate(tag_info, headers=[f'Tags ({len(sorted_tags)} from {len(tag_lists)} videos)', 'Frequency', 'Score'], floatfmt=['.1f','.0%','.1f']), file=tag_file)
+#     print(f'\nSuggested tag list: ',file=tag_file,end='')
+#     for i in labels[0:int(avg_num_tags)]:
+#         print(f'{i}, ',file=tag_file,end='')
+#     print('',file=tag_file)
+#     tag_file.close()
 def build_jank_TFMatrix(docword):
     # fill in
     tf = np.zeros((len(docword), len(docword[0])))
@@ -236,22 +226,12 @@ def build_jank_TFMatrix(docword):
         for j in range(len(docword[i])):
             tf[i][j] = docword[i][j]
     return tf
-
-
-# Builds an inverse document frequency matrix
-# Takes in a doc word matrix (as built in buildDocWordMatrix)
-# Returns an inverse document frequency matrix (should be a 1xW numpy array where
-# W is the number of words in the doc word matrix)
-# Don't forget the log factor!
 def buildIDFMatrix(docword):
     idf = np.zeros((1, len(docword.T)))
     for i in range(len(docword.T)):
         num_docs_word_in = (sum([1 for j in docword.T[i] if j != 0]))
         idf[0][i] = np.log10(len(docword) / num_docs_word_in)
     return np.array(idf)
-
-
-# Builds a tf-idf matrix given a doc word matrix
 def build_jank_TFIDFMatrix(docword):
     # fill in
     tf = build_jank_TFMatrix(docword)
