@@ -6,9 +6,7 @@ from tiktok import tik_tok_farmer
 from misc import get_path, folder_duration,set_dir,clean_folder,getme,notify
 from editing import concat
 from distributor import distribute
-from tags import tag_analyzer
-
-
+from tags import analyze_titles, metadata_analyzer, analyze_tags
 
 category_dict = {
     'chaos': [['r/abruptchaos','r/unexpected','r/watchthingsfly','r/maybemaybemaybe','r/yesyesyesno', 'r/perfectlycutscreams','r/holdmycosmo'],[15,20,10,20,15,10,10]],
@@ -49,10 +47,24 @@ if __name__ == "__main__":
     ls[4] = ['reddit','best of reddit','reddit compilations','funny reddit']
 
     try:
-        tag_analyzer(ls[2], 50, 'satisfying-tag-analysis', headless=False)
+        l = ['i hate my gay life sky sky sky ','i am a cloud homosexual',' life why homosexual are you gay','there are no clouds in the sky sky']
+        v = [1,10,100,1000]
+        #analyze_titles(l,v,'test')
+
+        metadata_analyzer(queries=ls[1], number_vids_each=4, foldername='metadata/metatest')
+
+        # tag_analyzer(ls[2], 50, 'dumbest', headless=False)
+
+
 
     # get_videos('all',15,'top', subfilter='all')
     # make_videos('chaos','chaos_comp_test',11*60,outro_path='outro720.mp4', delete_originals=False)
+
+    # For single sub videos:
+    # sub = 'r/blackmagicfuckery'
+    # r.reddit(foldername=sub, subreddit=sub, number=15, filter='hot', subfilter='all', download_images=False)
+    # concat(set_dir(sub),outro=SOMETHING)
+
 
     # sub_list = ['r/aww','r/Pigifs','r/cats']
     # percents_list = [50,10,40]
@@ -66,36 +78,8 @@ if __name__ == "__main__":
     # concat(dest_folder)
 
     #clean_folder(dest_folder,exception_list=['final.mp4','finalr.mp4','zcomp.mp4','zcompr.mp4'])
-
-    #r.reddit('r/holdmyfeedingtube',20,'top',download_images=False)
-    #folder = set_dir('r-holdmyfeedingtube-top-all-7/videos')
-    #concat(folder,random_dbl=True)
-    #get_yt_videos(query='can you tell the time?',duration=5*60,max_length=60)
-    #tik_tok_farmer(number=30)
     #print(f"Duration: {datetime.timedelta(seconds=folder_duration(folder))}") #Print duration of folder
 
     finally:
-        print(f'Execution time - {datetime.timedelta(seconds=round(time.time() - start_time))}')
-        notify('Selenium', '', 'Process finished')
-
-
-
-
-    # Available Functions
-
-    # Editing
-    # concat(folder, resolution='720p')
-    # trim_file(_input, output=0, start=0, end=0, dur=0)
-    # batch_trim(listfile, dur_or_timestamp)
-    # dub_photo(img, audio, video)  # no overwriting files with same name, will crash
-    # dub_video(video, audio, output)
-    # get_length(filename)
-
-    # Misc
-    # set_dir(foldername, filename='')
-    # clear(folder)
-    # clean(folder,hard=False)
-    # folder_duration(folder)
-    # batch_rename(folder,active)
-    # download_by_link(url, filepath, filename)
-    # wait_until_download_complete(folder,timeout=20)
+        print(f'\nExecution time - {datetime.timedelta(seconds=round(time.time() - start_time))}')
+        #notify('Selenium', '', 'Process finished')
