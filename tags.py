@@ -18,7 +18,6 @@ def get_vids(queries,number,mute=True,headless=True):
     for query in queries:
         links = set()
         get.site("https://www.youtube.com/results?search_query=" + query+'&sp=CAMSAhAB')
-
         while len(links) < number:
             elems = get.by_ids('video-title')
             links.update([elem.get_attribute('href') for elem in elems])
@@ -73,7 +72,6 @@ def get_metadata(url_list,mute=True,headless=True):
             else:
                 views = int(views_str.replace(',',''))
                 view_list.append(views)
-
     get.close()
     return tagmat,view_list, description_list, title_list
 
@@ -161,8 +159,15 @@ def metadata_analyzer(queries,number_vids_each,ngram_count,foldername,debug=Fals
     file.write(str(title_list))
     file.close()
 
+    t_file = open(f'{path}/{foldername}/ordered-titles.txt','w')
+    t_v = [(i,j) for i,j in zip(title_list,view_list)]
+    t_v_sorted = sorted(t_v,key=operator.itemgetter(1))[::-1]
+    print(tabulate(t_v_sorted,('Title','Views')),file=t_file)
+    if debug:
+        print(tabulate(t_v_sorted, ('Title', 'Views')))
+    t_file.close()
+
     print('Analyzing tags...')
-    #analyze_tags(tag_lists, view_list, tag_filename=f'{foldername}/tags-{number_vids_each}',debug=debug)
     analyze_text(tag_lists,view_list,1,f'{foldername}/tags-{number_vids_each}',debug=debug)
     print('Analyzing titles...')
     analyze_text(title_list, view_list, ngram_count,f'{foldername}/titles-{number_vids_each}',debug=debug)
@@ -170,7 +175,6 @@ def metadata_analyzer(queries,number_vids_each,ngram_count,foldername,debug=Fals
     analyze_text(description_list, view_list, ngram_count,f'{foldername}/descriptions-{number_vids_each}',debug=debug)
 
     return tag_lists,view_list,description_list,title_list
-
 
 # def analyze_tags(tag_lists,view_list,tag_filename,num_displayed,debug=False):
 #     assert len(tag_lists) == len(view_list)
@@ -218,27 +222,3 @@ def metadata_analyzer(queries,number_vids_each,ngram_count,foldername,debug=Fals
 #         print(f'{i}, ',file=tag_file,end='')
 #     print('',file=tag_file)
 #     tag_file.close()
-def build_jank_TFMatrix(docword):
-    # fill in
-    tf = np.zeros((len(docword), len(docword[0])))
-    for i in range(len(docword)):
-        sm = sum(docword[i])
-        for j in range(len(docword[i])):
-            tf[i][j] = docword[i][j]
-    return tf
-def buildIDFMatrix(docword):
-    idf = np.zeros((1, len(docword.T)))
-    for i in range(len(docword.T)):
-        num_docs_word_in = (sum([1 for j in docword.T[i] if j != 0]))
-        idf[0][i] = np.log10(len(docword) / num_docs_word_in)
-    return np.array(idf)
-def build_jank_TFIDFMatrix(docword):
-    # fill in
-    tf = build_jank_TFMatrix(docword)
-    idf = buildIDFMatrix(docword)
-    tfidf = np.zeros((len(tf), len(idf.T)))
-
-    for i in range(len(tf)):
-        for j in range(len(idf.T)):
-            tfidf[i][j] = idf.T[j] * tf[i][j]
-    return np.array(tfidf)

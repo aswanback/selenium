@@ -50,7 +50,7 @@ if __name__ == "__main__":
         l = ['i hate my gay life sky sky sky ','i am a cloud why homosexual',' life why homosexual are you gay','there are no clouds in the sky sky']
         v = [1,10,100,1000]
         #analyze_text(l,v,2,'test')
-        metadata_analyzer(queries=ls[2], number_vids_each=50, ngram_count=10, foldername='metadata/memes2',headless=True)
+        metadata_analyzer(queries=ls[1], number_vids_each=5, ngram_count=6, foldername='metadata/test',headless=False)
 
     # get_videos('all',15,'top', subfilter='all')
     # make_videos('chaos','chaos_comp_test',11*60,outro_path='outro720.mp4', delete_originals=False)
@@ -59,18 +59,6 @@ if __name__ == "__main__":
     # sub = 'r/blackmagicfuckery'
     # r.reddit(foldername=sub, subreddit=sub, number=15, filter='hot', subfilter='all', download_images=False)
     # concat(set_dir(sub),outro=SOMETHING)
-
-
-    # sub_list = ['r/aww','r/Pigifs','r/cats']
-    # percents_list = [50,10,40]
-    #
-    # for sub in sub_list:
-    #     #r.reddit(foldername=sub, subreddit=sub, number=15, filter='hot', subfilter='all', download_images=False)
-    #     pass
-    #
-    # dest_folder = set_dir('dist_test2')
-    # distribute(dest_folder,5*60,sub_list,percents_list,delete_originals=False)
-    # concat(dest_folder)
 
     #clean_folder(dest_folder,exception_list=['final.mp4','finalr.mp4','zcomp.mp4','zcompr.mp4'])
     #print(f"Duration: {datetime.timedelta(seconds=folder_duration(folder))}") #Print duration of folder
