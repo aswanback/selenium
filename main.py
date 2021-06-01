@@ -40,7 +40,7 @@ if __name__ == "__main__":
     start_time = time.time()
     set_dir('r')
 
-    get_videos('all', 50, filter='top', subfilter='month')
+    get_videos('animals', 15, filter='top', subfilter='month')
     # make_videos('chaos','chaos_comp_test',11*60,outro_path='outro720.mp4', delete_originals=False)
 
     # For single sub videos:
