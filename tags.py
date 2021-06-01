@@ -11,12 +11,14 @@ def get_vids_for_tags(queries,number,mute=True,headless=True):
     links_master = set()
     for query in queries:
         links = set()
-        get.site("https://www.youtube.com/results?search_query=" + query)
+        get.site("https://www.youtube.com/results?search_query=" + query+'&sp=CAMSAhAB')
+
         while len(links) < number:
             elems = get.by_ids('video-title')
             links.update([elem.get_attribute('href') for elem in elems])
             get.web.find_element_by_tag_name('body').send_keys(Keys.PAGE_DOWN)
         links_master.update(links)
+        print(f'Query "{query}" collected')
     get.close()
     return links_master
 
@@ -41,13 +43,16 @@ def get_tags(url_list,mute=True,headless=True):
         taglist = tags.split(', ')
         tagmat.append(taglist)
 
-        view_match = re.findall('{"viewCount":{"simpleText":"(.*?) views"}',page_src)
+        view_match = re.findall('{"viewCount":{"simpleText":"(.*?) view',page_src)
         if not view_match:
             view_list.append(0)
         else:
             views_str = view_match[0]
-            views = int(views_str.replace(',',''))
-            view_list.append(views)
+            if views_str == 'No':
+                view_list.append(0)
+            else:
+                views = int(views_str.replace(',',''))
+                view_list.append(views)
     get.close()
     return tagmat,view_list
 
@@ -67,8 +72,8 @@ def analyze_tags(url_list,tag_filename,mute=True,headless=True):
         for i in range(len(tag_lists[j])):
             score_dict[tag_lists[j][i]] += tag_dict[tag_lists[j][i]]*view_list[j]
 
-    sorted_tags = sorted(score_dict.items(), key=operator.itemgetter(1))[::-1]
-    sorted_tags = [i for i in sorted_tags if i[1] > 100/len(url_list)]
+    _sorted_tags = sorted(score_dict.items(), key=operator.itemgetter(1))[::-1]
+    sorted_tags = [i for i in _sorted_tags if i[1] > 100/len(url_list)]
     avg_score = np.nanmean([i[1] for i in sorted_tags])
     std_score = np.nanstd([i[1] for i in sorted_tags])
     sorted_tags = [(i,(j-avg_score)/std_score) for i,j in sorted_tags]
