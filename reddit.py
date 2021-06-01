@@ -2,6 +2,7 @@ import os
 import time
 import datetime
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import TimeoutException
 from misc import set_dir, download_by_link, getme, get_path, folder_duration
 
 def reddit(foldername, subreddit, number, filter, subfilter='all', download_images=False, download=True):
@@ -20,19 +21,21 @@ def reddit(foldername, subreddit, number, filter, subfilter='all', download_imag
 
     get.site("https://www.reddit.com/" + subreddit + "/"+ filter + subfilter)
     print("\tCollecting",end='')
+
+    num_img_fails = 0
     while len(vid_paths) < number and len(img_paths) < 1000:
         prev_vid_len = len(vid_paths)
         get.web.find_element_by_tag_name('body').send_keys(Keys.PAGE_DOWN)
-        try:
-            img_elems = get.by_class_names("_2_tDEnGMLxpM6uOa2kaDB3")
-            img_paths.update([i.get_attribute('src') for i in img_elems])
-        finally:
-            pass
-        try:
-            video_elems = get.by_css_selectors("source")
-            vid_paths.update([i.get_attribute('src') for i in video_elems])
-        finally:
-            pass
+        if num_img_fails <= 2:
+            try:
+                img_elems = get.by_class_names("_2_tDEnGMLxpM6uOa2kaDB3")
+                img_paths.update([i.get_attribute('src') for i in img_elems])
+            except TimeoutException:
+                num_img_fails += 1
+                print('... No images found...\n Collecting',end='')
+        video_elems = get.by_css_selectors("source")
+        vid_paths.update([i.get_attribute('src') for i in video_elems])
+
         if len(vid_paths) > prev_vid_len:
             print((len(vid_paths)-prev_vid_len)*'.', end='')
             img_archive = open(f'{folder}/img-{filter}-{subfilter[4:]}.txt', 'w')
@@ -74,7 +77,7 @@ def reddit(foldername, subreddit, number, filter, subfilter='all', download_imag
 
         i = 1
         for vid in vid_paths:
-            if i <10:
+            if i < 10:
                 s = 0
             else:
                 s = ''
@@ -87,7 +90,7 @@ def reddit(foldername, subreddit, number, filter, subfilter='all', download_imag
                 print('.',end='')
                 i+=1
             elif '.gif?' in vid:
-                download_by_link(vid,folder,f'video{s}{i}.gif')
+                download_by_link(vid,folder,f'video{s}{i}.mp4')
                 print('.',end='')
                 i+=1
             else:
