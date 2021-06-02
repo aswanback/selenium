@@ -1,4 +1,5 @@
 import datetime
+import nltk
 import time
 import reddit as r
 from youtube import get_yt_videos
@@ -14,7 +15,8 @@ category_dict = {
     'pain': [['r/publicfreakout', 'r/fightporn', 'r/streetfights',  'r/instantregret', 'r/holdmyfeedingtube','r/holdmyfries'],[10,20,15,20,20,15]],
     'dumb': [['r/instantregret', 'r/holdmyfeedingtube', 'r/publicfreakout', 'r/holdmybeer','r/holdmycosmo', 'r/holdmyfries'],[30,15,10,15,15,15]],
     'animals': [['r/aww', 'r/cats', 'r/Catswhoyell', 'r/AnimalsBeingJerks', 'r/Pigifs', 'r/Eyebleach', 'r/StartledCats', 'r/AnimalsBeingDerps', 'r/chonkers', 'r/tippytaps'],[15, 5, 5, 10, 5, 10, 5, 20, 15, 10]],
-    'satisfaction': [['r/bettereveryloop', 'r/Satsifyingasfuck', 'r/oddlysatisfying', 'r/powerwashingporn', 'r/blackmagicfuckery'],[25,25,30,10, 10]],
+    'satisfaction': [['r/Satisfyingasfuck', 'r/oddlysatisfying', 'r/powerwashingporn', 'r/FastWorkers','r/woahdude'],[25,25,30,10,10]],
+    'memes': [['r/bettereveryloop','r/memes', 'r/dankmemes', 'r/shitposting', 'r/gayspiderbrothel', 'r/shittymobilegameads', 'r/tiktokcringe','r/contagiouslaughter','r/blackmagicfuckery','r/holdmycosmo'],[10,15,15,15,5,5,20,5,5,5]],
     'all': [[ 'r/contagiouslaughter', 'r/shittymobilegameads', 'r/holdmyfries', 'r/holdmybeer', 'r/watchthingsfly', 'r/unexpected', 'r/memes', 'r/dankmemes', 'r/holdmyfeedingtube', 'r/tiktokcringe', 'r/shitposting', 'r/gayspiderbrothel', 'r/perfectlycutscreams', 'r/abruptchaos', 'r/instantregret', 'r/holdmycosmo', 'r/maybemaybemaybe', 'r/yesyesyesno'],[0]]
 }
     #'r/blackmagicfuckery', 'r/publicfreakout', 'r/fightporn','r/streetfights',
@@ -40,8 +42,8 @@ if __name__ == "__main__":
     start_time = time.time()
     set_dir('r')
 
-    get_videos('animals', 15, filter='top', subfilter='month')
-    # make_videos('chaos','chaos_comp_test',11*60,outro_path='outro720.mp4', delete_originals=False)
+    #get_videos('satisfaction', 15, filter='hot', subfilter='month')
+    make_videos('satisfaction','satisfaction_1',11*60,outro_path='outro720.mp4', delete_originals=False)
 
     # For single sub videos:
     # sub = 'r/blackmagicfuckery'
