@@ -19,7 +19,7 @@ def distribute(dest_folder,duration,src_folder_list,src_percents_list,delete_ori
             i = 0
             s = 0
             while f'video{s}{i}.mp4' in os.listdir(dest_folder):
-                if i < 10:
+                if i < 9:
                     s = 0
                 else:
                      s = ''
