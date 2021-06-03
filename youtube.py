@@ -26,7 +26,7 @@ def get_yt_videos(query, duration, max_length=5*60,foldername=None):
         url_list = []  # archive.txt
 
 
-    get.site("https://www.youtube.com/results?search_query=" + query)
+    get.site(query)
     starting_url = get.current_url()
     get.by_xpath('//*[@id="video-title"]').click()
     get.wait_until_move_from(starting_url)
