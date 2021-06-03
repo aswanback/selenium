@@ -1,10 +1,10 @@
 import subprocess
 import os
 import re
-import misc
+from misc import get_path
 import random
 
-def concat(folder,resolution='720p',outro_path='outro720.mp4',random_dbl=True, remove_txts=False):
+def concat(folder,resolution='720p',outro_path='outro720.mp4',random_dbl=True, remove_txts=False,audio_path='audio'):
     if resolution == '1080p':
         w = 1920
         h = 1080
@@ -42,7 +42,10 @@ def concat(folder,resolution='720p',outro_path='outro720.mp4',random_dbl=True, r
 
             if audio_codec == None or audio_codec == '':
                 print('adding audio and encoding...')
-                os.system(f'ffmpeg -y -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -i {filename_orig} -c:v copy -c:a aac -shortest {filename_orig[0:-4]+"-a.mp4"}')
+                path = get_path()
+                audio_files = [i for i in os.listdir(path+'/'+audio_path)]
+                dub_video(filename_orig,random.choice(audio_files),filename_orig[0:-4]+'-a.mp4')
+                #os.system(f'ffmpeg -y -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -i {filename_orig} -c:v copy -c:a aac -shortest {filename_orig[0:-4]+"-a.mp4"}')
                 os.system(f'ffmpeg -y -hide_banner -loglevel error -i {filename_orig[0:-4]+"-a.mp4"} -vf "scale=w={w}:h={h}:force_original_aspect_ratio=1,pad={w}:{h}:(ow-iw)/2:(oh-ih)/2" -map 0:v -map 0:a -use_wallclock_as_timestamps 1 -r 30 -c:v libx264 -c:a aac {filename_new}')
             elif audio_codec != 'aac' or video_codec != 'h264':
                 print('encoding...')

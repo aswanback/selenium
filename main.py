@@ -13,11 +13,11 @@ category_dict = {
     'maybe': [['r/maybemaybemaybe', 'r/yesyesyesno','r/holdmycosmo', 'r/tiktokcringe'],[25,25,25,10,15]],
     'pain': [['r/publicfreakout', 'r/fightporn', 'r/streetfights',  'r/instantregret', 'r/holdmyfeedingtube','r/holdmyfries'],[10,20,15,20,20,15]],
     'dumb': [['r/instantregret', 'r/holdmyfeedingtube', 'r/publicfreakout', 'r/holdmybeer','r/holdmycosmo', 'r/holdmyfries'],[30,15,10,15,15,15]],
-    'animals': [['r/aww', 'r/cats', 'r/Catswhoyell', 'r/AnimalsBeingJerks', 'r/Pigifs', 'r/Eyebleach', 'r/StartledCats', 'r/AnimalsBeingDerps', 'r/chonkers', 'r/tippytaps'],[15, 5, 5, 10, 5, 10, 5, 20, 15, 10]],
+    'animals': [['r/aww', 'r/cats', 'r/Catswhoyell', 'r/AnimalsBeingJerks', 'r/Eyebleach', 'r/StartledCats','r/AnimalsBeingDerps', 'r/chonkers', 'r/tippytaps'], [15, 5, 5, 15, 10, 5, 20, 15, 10]],
     'satisfaction': [['r/bettereveryloop', 'r/Satsifyingasfuck', 'r/oddlysatisfying', 'r/powerwashingporn', 'r/blackmagicfuckery'],[25,25,30,10, 10]],
     'all': [[ 'r/blackmagicfuckery', 'r/publicfreakout', 'r/fightporn','r/streetfights', 'r/Satisfyingasfuck','r/contagiouslaughter', 'r/shittymobilegameads', 'r/holdmyfries', 'r/holdmybeer', 'r/watchthingsfly', 'r/unexpected', 'r/memes', 'r/dankmemes', 'r/holdmyfeedingtube', 'r/tiktokcringe', 'r/shitposting', 'r/gayspiderbrothel', 'r/perfectlycutscreams', 'r/abruptchaos', 'r/instantregret', 'r/holdmycosmo', 'r/maybemaybemaybe', 'r/yesyesyesno'],[0]]
 }
-    #
+
 def get_videos(category, number_from_each, filter,subfilter='all'):
     cat = category_dict[category]
     sub_list = cat[0]
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     set_dir('r')
 
     #get_videos('animals', 15, filter='top', subfilter='month')
-    make_videos('animals','inaugural-animals',11*60,filter='top',subfilter='month',outro_path='outro720.mp4', delete_originals=False)
+    make_videos('meme','animals-2',11*60,filter='top',subfilter='month',outro_path='outro720.mp4', delete_originals=False)
 
     # For single sub videos:
     # sub = 'r/blackmagicfuckery'
